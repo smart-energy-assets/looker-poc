@@ -134,6 +134,7 @@ view: calidad_biometano_b211 {
   }
 
   dimension: um {
+    primary_key: yes
     type: string
     description: "Código único identificador de la unidad de medida."
     sql: ${TABLE}.um ;;
@@ -149,4 +150,12 @@ view: calidad_biometano_b211 {
     type: count
     drill_fields: []
   }
+
+  measure: cantidad_total {
+    type: sum
+    sql: ${qn} ;;
+    drill_fields: []
+  }
+
+
 }

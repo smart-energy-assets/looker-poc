@@ -212,6 +212,7 @@ view: infraestructuras {
   }
 
   dimension: um {
+    primary_key: yes
     type: string
     description: "Unidad de medición."
     sql: ${TABLE}.um ;;

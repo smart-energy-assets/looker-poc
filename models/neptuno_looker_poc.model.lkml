@@ -37,7 +37,13 @@ explore: calidad_biometano_1503_a {}
 
 explore: delta_factor_compresibilidad_linea {}
 
-explore: calidad_biometano_b211 {}
+explore: calidad_biometano_b211 {
+  join: infraestructuras {
+    sql_on: ${calidad_biometano_b211.um} = ${infraestructuras.um} ;;
+    relationship: one_to_many
+    type: inner # Could be excluded since left_outer is the default
+  }
+}
 
 explore: delta_factor_compresibilidad_um {}
 
