@@ -13,7 +13,7 @@ view: infraestructuras {
 
   dimension: centro_trabajo {
     type: string
-    description: "Centro de trabajo."
+    description: "Centro."
     sql: ${TABLE}.centro_trabajo ;;
   }
 
