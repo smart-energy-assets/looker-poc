@@ -218,6 +218,12 @@ view: infraestructuras {
     sql: ${TABLE}.um ;;
   }
 
+  dimension: um_linea {
+    primary_key: yes
+    type:string
+    sql: CONCAT(${TABLE}.um, ${TABLE}.linea) ;;
+  }
+
   dimension: um_descripcion {
     type: string
     description: "Descripción de la unidad de medición."

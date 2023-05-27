@@ -11,6 +11,12 @@ view: estudio_mermas {
   # A dimension is a groupable field that can be used to filter query results.
   # This dimension will be called "Centro Trabajo" in Explore.
 
+  dimension: um_linea {
+    primary_key: yes
+    type:string
+    sql: CONCAT(${TABLE}.um, ${TABLE}.linea) ;;
+  }
+
   dimension: centro_trabajo {
     type: string
     sql: ${TABLE}.centro_trabajo ;;

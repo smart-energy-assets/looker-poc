@@ -49,7 +49,14 @@ explore: delta_factor_compresibilidad_um {}
 
 explore: infraestructuras {}
 
-explore: estudio_mermas {}
+explore: estudio_mermas {
+  join: infraestructuras {
+    sql_on: ${estudio_mermas.um_linea} = ${infraestructuras.um_linea} ;;
+    relationship: one_to_many
+    type: left_outer
+  }
+}
+
 
 explore: mapa_dispatching {}
 
