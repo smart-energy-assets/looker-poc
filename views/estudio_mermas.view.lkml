@@ -14,8 +14,10 @@ view: estudio_mermas {
   dimension: um_linea {
     primary_key: yes
     type:string
-    sql: CONCAT(${TABLE}.um, ${TABLE}.linea) ;;
+    sql: CONCAT(${fecha_lectura_date},${TABLE}.um, ${TABLE}.linea) ;;
   }
+
+
 
   dimension: centro_trabajo {
     type: string
@@ -243,6 +245,10 @@ view: estudio_mermas {
     sql: ${TABLE}.zona ;;
   }
 
+measure: volumen_normal_medio {
+  type: average
+  sql: ${vn} ;;
+}
   measure: count {
     type: count
     drill_fields: []

@@ -13,7 +13,7 @@ view: infraestructuras {
 
   dimension: centro_trabajo {
     type: string
-    description: "Centro."
+    description: "Centro de trabajo."
     sql: ${TABLE}.centro_trabajo ;;
   }
 
@@ -212,7 +212,7 @@ view: infraestructuras {
   }
 
   dimension: um {
-    primary_key: yes
+   # primary_key: yes
     type: string
     description: "Unidad de medición."
     sql: ${TABLE}.um ;;

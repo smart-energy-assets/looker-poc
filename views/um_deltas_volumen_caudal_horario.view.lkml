@@ -21,6 +21,13 @@ view: um_deltas_volumen_caudal_horario {
   # measures for this dimension, but you can also add measures of many different aggregates.
   # Click on the type parameter to see all the options in the Quick Help panel on the right.
 
+  dimension: clave_registro {
+    primary_key: yes
+    type:string
+    sql: CONCAT(${TABLE}.fecha_lectura,${TABLE}.um) ;;
+  }
+
+
   measure: total_delta_volumen_bruto_procesado {
     type: sum
     sql: ${delta_volumen_bruto_procesado} ;;

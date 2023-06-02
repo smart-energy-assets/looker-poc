@@ -65,3 +65,17 @@ explore: piloto_electrovalvulas {}
 explore: um_deltas_volumen_caudal_horario {}
 
 explore: um_deltas_volumen_horario {}
+
+
+explore: looker_deltas_historical_daily {
+  join: looker_lines{
+    sql_on: ${looker_deltas_historical_daily.l_name}=${looker_lines.id};;
+    relationship: many_to_one
+    type: left_outer
+  }
+  join: looker_measurement_unit{
+    sql_on: ${looker_deltas_historical_daily.mu_name}=${looker_measurement_unit.id};;
+    relationship: many_to_one
+    type: inner
+  }
+}
