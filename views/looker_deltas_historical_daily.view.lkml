@@ -10,7 +10,6 @@ view: looker_deltas_historical_daily {
   # Here's what a typical dimension looks like in LookML.
   # A dimension is a groupable field that can be used to filter query results.
   # This dimension will be called "Delta E" in Explore.
-
   dimension: delta_e {
     type: number
     sql: ${TABLE}.delta_E ;;
@@ -63,6 +62,7 @@ view: looker_deltas_historical_daily {
   dimension: delta_vn {
     type: number
     sql: ${TABLE}.delta_Vn ;;
+    drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
 
   dimension: l_name {
@@ -100,6 +100,16 @@ view: looker_deltas_historical_daily {
 
   measure: count {
     type: count
-    drill_fields: [l_name, mu_name]
+    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+  }
+  measure: average_delta_vn {
+    type: average
+    sql: ${delta_vb} ;;
+    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+  }
+  measure: sum_delta_vn {
+    type: sum
+    sql: ${delta_vb} ;;
+    drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
 }
