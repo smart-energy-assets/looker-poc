@@ -62,13 +62,13 @@ view: mapa_dispatching {
   }
 
   dimension: posicion_latitud {
-    type: string
+    type: number
     description: "Latitud de la posición."
     sql: ${TABLE}.posicion_latitud ;;
   }
 
   dimension: posicion_longitud {
-    type: string
+    type: number
     description: "Longitud de la posición."
     sql: ${TABLE}.posicion_longitud ;;
   }
@@ -88,5 +88,11 @@ view: mapa_dispatching {
   measure: count {
     type: count
     drill_fields: []
+  }
+
+  dimension: location {
+    type: location
+    sql_latitude: ${posicion_latitud} ;;
+    sql_longitude: ${posicion_longitud} ;;
   }
 }
