@@ -11,8 +11,11 @@ view: looker_deltas_historical_daily {
   # A dimension is a groupable field that can be used to filter query results.
   # This dimension will be called "Delta E" in Explore.
   dimension: delta_e {
+    description: "delta energía"
     type: number
     sql: ${TABLE}.delta_E ;;
+   # value_format_name: decimal_2
+    value_format: "0.000,,\" GWh\""
   }
 
   # A measure is a field that uses a SQL aggregate function. Here are defined sum and average
@@ -22,16 +25,19 @@ view: looker_deltas_historical_daily {
   measure: total_delta_e {
     type: sum
     sql: ${delta_e} ;;
+    value_format: "0.000,,\" GWh\""
   }
 
   measure: average_delta_e {
     type: average
     sql: ${delta_e} ;;
+    value_format: "0.000,,\" GWh\""
   }
 
   dimension: delta_ee {
     type: number
     sql: ${TABLE}.delta_EE ;;
+
   }
 
   dimension: delta_vb {
@@ -62,6 +68,7 @@ view: looker_deltas_historical_daily {
   dimension: delta_vn {
     type: number
     sql: ${TABLE}.delta_Vn ;;
+    value_format: "0.000,\" dam3\""
     drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
 
@@ -104,12 +111,14 @@ view: looker_deltas_historical_daily {
   }
   measure: average_delta_vn {
     type: average
-    sql: ${delta_vb} ;;
+    sql: ${delta_vn} ;;
+    value_format: "0.000,\" dam3\""
     drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
   measure: sum_delta_vn {
     type: sum
-    sql: ${delta_vb} ;;
+    sql: ${delta_vn} ;;
+    value_format: "0.000,\" dam3\""
     drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
 }
