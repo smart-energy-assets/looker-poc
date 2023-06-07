@@ -184,6 +184,5 @@ view: looker_lines {
 
   measure: count {
     type: count
-    drill_fields: [id, name]
   }
 }

@@ -22,17 +22,6 @@ view: looker_deltas_historical_daily {
   # measures for this dimension, but you can also add measures of many different aggregates.
   # Click on the type parameter to see all the options in the Quick Help panel on the right.
 
-  measure: total_delta_e {
-    type: sum
-    sql: ${delta_e} ;;
-    value_format: "0.000,,\" GWh\""
-  }
-
-  measure: average_delta_e {
-    type: average
-    sql: ${delta_e} ;;
-    value_format: "0.000,,\" GWh\""
-  }
 
   dimension: delta_ee {
     type: number
@@ -107,18 +96,33 @@ view: looker_deltas_historical_daily {
 
   measure: count {
     type: count
-    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+    drill_fields: [looker_measurement_unit.name,looker_lines.name]
   }
+
   measure: average_delta_vn {
     type: average
     sql: ${delta_vn} ;;
     value_format: "0.000,\" dam3\""
-    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
   }
-  measure: sum_delta_vn {
+  measure: total_delta_vn {
     type: sum
     sql: ${delta_vn} ;;
     value_format: "0.000,\" dam3\""
-    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
   }
+  measure: total_delta_e {
+    type: sum
+    sql: ${delta_e} ;;
+    value_format: "0.000,,\" GWh\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+  }
+
+  measure: average_delta_e {
+    type: average
+    sql: ${delta_e} ;;
+    #drill_fields:[looker_measurement_unit.name,looker_lines.name]
+    value_format: "0.000,,\" GWh\""
+  }
+
 }
