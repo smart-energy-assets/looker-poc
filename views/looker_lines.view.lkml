@@ -139,7 +139,7 @@ view: looker_lines {
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
-    drill_fields:[looker_lines.name]
+  #  drill_fields:[looker_measurement_unit.name,looker_lines.name]
   }
 
   dimension: old_id {
