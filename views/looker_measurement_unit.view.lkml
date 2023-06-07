@@ -124,7 +124,7 @@ view: looker_measurement_unit {
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
-    drill_fields: [looker_lines.name,looker_measurement_unit.name]
+    #drill_fields: [looker_lines.name,looker_measurement_unit.name]
   }
 
   dimension: old_id {
