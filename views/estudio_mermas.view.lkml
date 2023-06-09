@@ -228,6 +228,7 @@ view: estudio_mermas {
   }
 
   dimension: vn {
+    description: "Volumen normalizado de consumo"
     type: number
     sql: ${TABLE}.vn ;;
   }
@@ -235,10 +236,18 @@ view: estudio_mermas {
   dimension: zona {
     type: string
     sql: ${TABLE}.zona ;;
+    drill_fields: [centro_trabajo, unidad_organizativa]
   }
 
   measure: count {
     type: count
     drill_fields: []
   }
+
+  measure: vn_promedio {
+    type: average
+    sql: ${vn} ;;
+    drill_fields: [contador_familia, centro_trabajo, um, total_contador_ansi]
+  }
+
 }
