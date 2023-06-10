@@ -26,6 +26,7 @@ view: looker_branch {
   dimension: code {
     type: string
     sql: ${TABLE}.code ;;
+    label: "Nombre del Ramal"
   }
 
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.

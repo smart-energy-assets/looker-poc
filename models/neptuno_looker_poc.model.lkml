@@ -25,17 +25,30 @@ persist_with: neptuno_looker_poc_default_datagroup
 # Typically, join parameters require that you define the join type, join relationship, and a sql_on clause.
 # Each joined view also needs to define a primary key.
 
-explore: delta_factor_compresibilidad_linea_check {}
+explore: looker_measurement_unit{
+  hidden: yes
+}
+explore: delta_factor_compresibilidad_linea_check {
+  hidden: yes
+}
 
-explore: delta_factor_compresibilidad_linea_recalculo {}
+explore: delta_factor_compresibilidad_linea_recalculo {
+  hidden: yes
+}
 
-explore: calendario_dia_gas {}
+explore: calendario_dia_gas {
+  hidden: yes
+}
 
-explore: calendario {}
+explore: calendario {
+  hidden: yes
+}
 
 explore: calidad_biometano_1503_a {}
 
-explore: delta_factor_compresibilidad_linea {}
+explore: delta_factor_compresibilidad_linea {
+  hidden: yes
+}
 
 explore: calidad_biometano_b211 {
   join: infraestructuras {
@@ -45,9 +58,13 @@ explore: calidad_biometano_b211 {
   }
 }
 
-explore: delta_factor_compresibilidad_um {}
+explore: delta_factor_compresibilidad_um {
+  hidden: yes
+}
 
-explore: infraestructuras {}
+explore: infraestructuras {
+  hidden: yes
+}
 
 explore: estudio_mermas {
   join: infraestructuras {
@@ -57,17 +74,25 @@ explore: estudio_mermas {
   }
 }
 
+explore: mapa_dispatching {
+  hidden: yes
+}
 
-explore: mapa_dispatching {}
+explore: piloto_electrovalvulas {
+  hidden: yes
+}
 
-explore: piloto_electrovalvulas {}
+explore: um_deltas_volumen_caudal_horario {
+  hidden: yes
+}
 
-explore: um_deltas_volumen_caudal_horario {}
-
-explore: um_deltas_volumen_horario {}
-
+explore: um_deltas_volumen_horario {
+  hidden: yes
+}
 
 explore: looker_deltas_historical_daily {
+  description: "Consumos Diarios de Volumen y Energia por Linea"
+
   join: looker_lines{
     sql_on: ${looker_deltas_historical_daily.l_name}=${looker_lines.id};;
     relationship: many_to_one
@@ -78,4 +103,15 @@ explore: looker_deltas_historical_daily {
     relationship: many_to_one
     type: inner
   }
+  join: looker_position {
+    sql_on: ${looker_measurement_unit.position_id}=${looker_position.id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
+#  join: looker_branch {
+#    sql_on: ${looker_measurement_unit.in_branch_id}=${looker_branch.id} OR ${looker_measurement_unit.out_branch_id}=${looker_branch.id} ;;
+#    relationship: many_to_many
+#    type: left_outer
+#  }
+
 }
