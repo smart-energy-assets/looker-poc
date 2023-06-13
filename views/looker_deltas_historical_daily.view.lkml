@@ -12,73 +12,83 @@ view: looker_deltas_historical_daily {
   # This dimension will be called "Delta E" in Explore.
 
   dimension: delta_e {
+    description: "Consumo en Energía"
     type: number
     sql: ${TABLE}.delta_E ;;
+   # value_format_name: decimal_2
+    value_format: "0.000,,\" GWh\""
+    drill_fields:[looker_lines.name,looker_measurement_unit.name,looker_position.name]
+    label: "Consumo en Energía"
+  }
+  dimension: delta_vn {
+    type: number
+    sql: ${TABLE}.delta_Vn ;;
+    value_format: "0.000,\" dam3\""
+    drill_fields: [looker_lines.name,looker_measurement_unit.name,looker_position.name]
+    label: "Consumo en Volumen Normalizado"
   }
 
-  # A measure is a field that uses a SQL aggregate function. Here are defined sum and average
-  # measures for this dimension, but you can also add measures of many different aggregates.
-  # Click on the type parameter to see all the options in the Quick Help panel on the right.
-
-  measure: total_delta_e {
-    type: sum
-    sql: ${delta_e} ;;
-  }
-
-  measure: average_delta_e {
-    type: average
-    sql: ${delta_e} ;;
-  }
 
   dimension: delta_ee {
     type: number
     sql: ${TABLE}.delta_EE ;;
+    label: "Consumo energia en error"
+    hidden: yes
+
   }
 
   dimension: delta_vb {
     type: number
     sql: ${TABLE}.delta_Vb ;;
+    label: "Consumo en Volumen Bruto"
+    hidden: yes
   }
 
   dimension: delta_vbc {
     type: number
     sql: ${TABLE}.delta_Vbc ;;
+    label: "Consumo Volumen Bruto Corregido"
+    hidden: yes
   }
 
   dimension: delta_veb {
     type: number
     sql: ${TABLE}.delta_Veb ;;
+    hidden: yes
   }
 
   dimension: delta_vebc {
     type: number
     sql: ${TABLE}.delta_Vebc ;;
+    hidden: yes
   }
 
   dimension: delta_ven {
     type: number
     sql: ${TABLE}.delta_Ven ;;
+    hidden: yes
   }
 
-  dimension: delta_vn {
-    type: number
-    sql: ${TABLE}.delta_Vn ;;
-  }
 
   dimension: l_name {
     primary_key: yes
     type: string
     sql: ${TABLE}.lName ;;
+    label: "Id de Unidad de Linea"
+    hidden: yes
   }
 
   dimension: mu_name {
     type: string
-    sql: ${TABLE}.muName ;;
+    sql: ${TABLE}.muName;;
+    label: "Id de Unidad de Medida"
+    hidden: yes
   }
 
   dimension: source {
     type: string
     sql: ${TABLE}.source ;;
+    hidden: yes
   }
 
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.
@@ -98,8 +108,43 @@ view: looker_deltas_historical_daily {
     sql: ${TABLE}.TS ;;
   }
 
+  # A measure is a field that uses a SQL aggregate function. Here are defined sum and average
+  # measures for this dimension, but you can also add measures of many different aggregates.
+  # Click on the type parameter to see all the options in the Quick Help panel on the right.
+
   measure: count {
     type: count
-    drill_fields: [l_name, mu_name]
+    drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Número de registros horarios"
+  }
+
+  measure: average_delta_vn {
+    type: average
+    sql: ${delta_vn} ;;
+    value_format: "0.000,\" dam3\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Consumo Medio en Volumen Normalizado"
+  }
+  measure: total_delta_vn {
+    type: sum
+    sql: ${delta_vn} ;;
+    value_format: "0.000,\" dam3\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Consumo Total en Volumen Normalizado"
+  }
+  measure: total_delta_e {
+    type: sum
+    sql: ${delta_e} ;;
+    value_format: "0.000,,\" GWh\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Consumo Total en Energía"
+  }
+
+  measure: average_delta_e {
+    type: average
+    sql: ${delta_e} ;;
+    #drill_fields:[looker_measurement_unit.name,looker_lines.name]
+    value_format: "0.000,,\" GWh\""
+    label: "Consumo Medio en Energía"
   }
 }

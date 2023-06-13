@@ -154,7 +154,7 @@ view: calidad_biometano_b211 {
   measure: cantidad_total {
     type: sum
     sql: ${qn} ;;
-    drill_fields: []
+    drill_fields: [mean_rd, mean_wi]
   }
 
 
