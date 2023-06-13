@@ -66,6 +66,7 @@ view: looker_deltas_historical_daily {
   }
 
   dimension: l_name {
+    primary_key: yes
     type: string
     sql: ${TABLE}.lName ;;
   }

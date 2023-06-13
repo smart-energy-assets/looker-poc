@@ -37,7 +37,13 @@ explore: calidad_biometano_1503_a {}
 
 explore: delta_factor_compresibilidad_linea {}
 
-explore: calidad_biometano_b211 {}
+explore: calidad_biometano_b211 {
+  join: infraestructuras {
+    sql_on: ${calidad_biometano_b211.um} = ${infraestructuras.um} ;;
+    relationship: one_to_many
+    type: inner # Could be excluded since left_outer is the default
+  }
+}
 
 explore: delta_factor_compresibilidad_um {}
 
@@ -46,7 +52,7 @@ explore: infraestructuras {}
 explore: estudio_mermas {
 
   join: infraestructuras {
-    sql_on: ${estudio_mermas.um} =  ${infraestructuras.um} ;;
+    sql_on: ${estudio_mermas.um_linea} = ${infraestructuras.um_linea} ;;
     relationship: one_to_many
     type: left_outer
   }
@@ -56,20 +62,24 @@ explore: mapa_dispatching {}
 
 explore: piloto_electrovalvulas {}
 
-explore: um_deltas_volumen_caudal_horario {}
+explore: um_deltas_volumen_caudal_horario {
+  join: infraestructuras{
+    sql_on: ${um_deltas_volumen_caudal_horario.um}=${infraestructuras.um};;
+    relationship: many_to_one
+    type: inner
+  }
+}
 
 explore: um_deltas_volumen_horario {}
 
 explore: looker_deltas_historical_daily {
-
-join: looker_lines {
-  sql_on: ${looker_deltas_historical_daily.l_name} =  ${looker_lines.id} ;;
-  relationship: many_to_one
-  type: left_outer
+  join: looker_lines{
+    sql_on: ${looker_deltas_historical_daily.l_name}=${looker_lines.id};;
+    relationship: many_to_one
+    type: left_outer
   }
-
-  join: looker_measurement_unit {
-    sql_on: ${looker_deltas_historical_daily.mu_name} =  ${looker_measurement_unit.id} ;;
+  join: looker_measurement_unit{
+    sql_on: ${looker_deltas_historical_daily.mu_name}=${looker_measurement_unit.id};;
     relationship: many_to_one
     type: inner
   }
