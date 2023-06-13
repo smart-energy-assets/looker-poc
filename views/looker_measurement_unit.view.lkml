@@ -35,6 +35,7 @@ view: looker_measurement_unit {
            (SELECT code FROM looker_branch WHERE id = ${in_branch_id})
          END ;;
   label: "Nombre Ramal de Entrada"
+  drill_fields: [name,looker_lines.name]
   }
 
   dimension: out_branch_name {
@@ -44,6 +45,7 @@ view: looker_measurement_unit {
            (SELECT code FROM looker_branch WHERE id = ${out_branch_id})
          END ;;
     label: "Nombre Ramal de Salida"
+    drill_fields: [name,looker_lines.name]
   }
 
   dimension: active_chroma {

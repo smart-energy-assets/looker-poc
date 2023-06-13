@@ -147,5 +147,4 @@ view: looker_deltas_historical_daily {
     value_format: "0.000,,\" GWh\""
     label: "Consumo Medio en Energía"
   }
-
 }

@@ -25,9 +25,32 @@ persist_with: neptuno_looker_poc_default_datagroup
 # Typically, join parameters require that you define the join type, join relationship, and a sql_on clause.
 # Each joined view also needs to define a primary key.
 
-explore: looker_measurement_unit{
-  hidden: yes
+explore: looker_deltas_historical_daily {
+  description: "Consumos Diarios de Volumen y Energia por Linea"
+
+  join: looker_lines{
+    sql_on: ${looker_deltas_historical_daily.l_name}=${looker_lines.id};;
+    relationship: many_to_one
+    type: left_outer
+  }
+  join: looker_measurement_unit{
+    sql_on: ${looker_deltas_historical_daily.mu_name}=${looker_measurement_unit.id};;
+    relationship: many_to_one
+    type: inner
+  }
+  join: looker_position {
+    sql_on: ${looker_measurement_unit.position_id}=${looker_position.id} ;;
+    relationship: many_to_one
+    type: left_outer
+  }
+  join: looker_branch {
+    sql_on: ${looker_measurement_unit.in_branch_id}=${looker_branch.id} OR ${looker_measurement_unit.out_branch_id}=${looker_branch.id} ;;
+    relationship: many_to_many
+    type: left_outer
+  }
+
 }
+
 explore: delta_factor_compresibilidad_linea_check {
   hidden: yes
 }
@@ -88,30 +111,7 @@ explore: um_deltas_volumen_caudal_horario {
 
 explore: um_deltas_volumen_horario {
   hidden: yes
-}
-
-explore: looker_deltas_historical_daily {
-  description: "Consumos Diarios de Volumen y Energia por Linea"
-
-  join: looker_lines{
-    sql_on: ${looker_deltas_historical_daily.l_name}=${looker_lines.id};;
-    relationship: many_to_one
-    type: left_outer
   }
-  join: looker_measurement_unit{
-    sql_on: ${looker_deltas_historical_daily.mu_name}=${looker_measurement_unit.id};;
-    relationship: many_to_one
-    type: inner
-  }
-  join: looker_position {
-    sql_on: ${looker_measurement_unit.position_id}=${looker_position.id} ;;
-    relationship: many_to_one
-    type: left_outer
-  }
-#  join: looker_branch {
-#    sql_on: ${looker_measurement_unit.in_branch_id}=${looker_branch.id} OR ${looker_measurement_unit.out_branch_id}=${looker_branch.id} ;;
-#    relationship: many_to_many
-#    type: left_outer
-#  }
+explore: balances {
 
 }
