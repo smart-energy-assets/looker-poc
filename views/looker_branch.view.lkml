@@ -12,6 +12,8 @@ view: looker_branch {
     primary_key: yes
     type: string
     sql: ${TABLE}.id ;;
+    drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Id del Ramal"
   }
 
   # Here's what a typical dimension looks like in LookML.
@@ -26,6 +28,8 @@ view: looker_branch {
   dimension: code {
     type: string
     sql: ${TABLE}.code ;;
+    label: "Nombre del Ramal"
+    drill_fields: [looker_measurement_unit.name,looker_lines.name]
   }
 
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.
@@ -44,6 +48,7 @@ view: looker_branch {
     ]
     datatype: datetime
     sql: ${TABLE}.created_at ;;
+    hidden: yes
   }
 
   dimension_group: deleted {
@@ -59,21 +64,25 @@ view: looker_branch {
     ]
     datatype: datetime
     sql: ${TABLE}.deleted ;;
+    hidden: yes
   }
 
   dimension: linear_schema {
     type: string
     sql: ${TABLE}.linearSchema ;;
+    hidden: yes
   }
 
   dimension: name {
     type: string
     sql: ${TABLE}.name ;;
+    hidden: yes
   }
 
   dimension: old_id {
     type: string
     sql: ${TABLE}.old_id ;;
+    hidden: yes
   }
 
   dimension_group: updated {
@@ -89,10 +98,10 @@ view: looker_branch {
     ]
     datatype: datetime
     sql: ${TABLE}.updated_at ;;
+    hidden: yes
   }
 
   measure: count {
     type: count
-    drill_fields: [id, name]
   }
 }

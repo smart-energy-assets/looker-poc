@@ -128,6 +128,93 @@ view: um_deltas_volumen_caudal_horario {
     sql: ${TABLE}.um_tipo ;;
   }
 
+  dimension: nhoras_menor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > 0 AND ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
+  dimension: nhoras_mayor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
+  dimension: nhoras_cero {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} = 0
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
+  dimension: delta_volumen_mayor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END ;;
+  }
+
+  dimension: delta_volumen_menor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END ;;
+  }
+
+    measure: porcentaje_delta_mayor_QMIN {
+    type: number
+    sql: SUM(
+          CASE WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END
+        ) / sum(${delta_volumen_bruto_procesado}) ;;
+    value_format_name: decimal_2
+  }
+
+  measure: porcentaje_delta_menor_QMIN {
+    type: number
+    sql: SUM(
+          CASE WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END
+        ) / sum(${delta_volumen_bruto_procesado}) ;;
+    value_format_name: decimal_2
+  }
+
+  measure: nhoras_totales{
+    type: number
+    sql: '1' ;;
+  }
+
+  measure: porcentaje_horas {
+    type: number
+    sql: sum(${nhoras_cero}) / sum(${nhoras_totales};;
+  }
+
+  measure: porcentaje_horas_mayor_QMIN {
+    type: number
+    sql: sum(${nhoras_mayor_QMIN}) / sum(${nhoras_totales};;
+  }
+
+  measure: porcentaje_horas_mENOR_QMIN {
+    type: number
+    sql: sum(${nhoras_menor_QMIN}_QMIN}) / sum(${nhoras_totales};;
+  }
+
   measure: count {
     type: count
     drill_fields: []

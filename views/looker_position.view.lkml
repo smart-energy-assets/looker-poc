@@ -12,10 +12,29 @@ view: looker_position {
     primary_key: yes
     type: string
     sql: ${TABLE}.id ;;
+    label: "Id de Posición"
+    hidden: yes
   }
 
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.
   # Looker converts dates and timestamps to the specified timeframes within the dimension group.
+
+  dimension: name {
+    type: string
+    sql: ${TABLE}.name ;;
+    drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Nombre de Posición"
+  }
+
+  dimension: location {
+    type: location
+    sql_latitude:JSON_EXTRACT_SCALAR(geo_position, '$.latitude')   ;;
+    sql_longitude:JSON_EXTRACT_SCALAR(geo_position, '$.longitude') ;;
+    label: "Localización"
+    #sql_longitude:JSON_EXTRACT_SCALAR(${TABLE}.geo_position.longitude) ;;
+    #sql_latitude:JSON_EXTRACT_SCALAR(${TABLE}.geo_position.latitude);;
+    drill_fields:[looker_measurement_unit.name,looker_lines.name]
+  }
 
   dimension_group: created {
     type: time
@@ -30,6 +49,7 @@ view: looker_position {
     ]
     datatype: datetime
     sql: ${TABLE}.created_at ;;
+    hidden: yes
   }
 
   # Here's what a typical dimension looks like in LookML.
@@ -39,31 +59,34 @@ view: looker_position {
   dimension: description {
     type: string
     sql: ${TABLE}.description ;;
+    label: "Descripción"
   }
 
   dimension: geo_position {
     type: string
     sql: ${TABLE}.geo_position ;;
+    hidden: yes
   }
+
 
   dimension: measure_bool {
     type: yesno
     sql: ${TABLE}.measure_bool ;;
+    hidden: yes
   }
 
-  dimension: name {
-    type: string
-    sql: ${TABLE}.name ;;
-  }
 
   dimension: old_id {
     type: string
     sql: ${TABLE}.old_id ;;
+    hidden: yes
+
   }
 
   dimension: owner_id {
     type: string
     sql: ${TABLE}.ownerId ;;
+    hidden: yes
   }
 
   dimension_group: updated {
@@ -79,10 +102,12 @@ view: looker_position {
     ]
     datatype: datetime
     sql: ${TABLE}.updated_at ;;
+    hidden: yes
   }
 
   measure: count {
     type: count
     drill_fields: [id, name]
+    label: "Numero de Posiciones"
   }
 }
