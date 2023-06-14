@@ -148,9 +148,4 @@ view: looker_deltas_historical_daily {
     label: "Consumo Medio en Energía"
   }
 
-  measure: total_delta_vn {
-    description: "Suma de los valores de delta_vn"
-    type: sum
-    sql: ${delta_vn} ;;
-  }
 }
