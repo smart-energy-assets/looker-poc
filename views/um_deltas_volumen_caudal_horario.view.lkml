@@ -128,6 +128,15 @@ view: um_deltas_volumen_caudal_horario {
     sql: ${TABLE}.um_tipo ;;
   }
 
+  dimension: horas_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > 0 AND ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
   measure: count {
     type: count
     drill_fields: []
