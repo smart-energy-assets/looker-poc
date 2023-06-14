@@ -102,4 +102,10 @@ view: looker_deltas_historical_daily {
     type: count
     drill_fields: [l_name, mu_name]
   }
+
+  measure: total_delta_vn {
+    description: "Suma de los valores de delta_vn"
+    type: sum
+    sql: ${delta_vn} ;;
+  }
 }

@@ -79,3 +79,6 @@ explore: looker_deltas_historical_daily {
     type: inner
   }
 }
+
+# BQML ARIMA_PLUS
+explore: arima_prediction_union {}
