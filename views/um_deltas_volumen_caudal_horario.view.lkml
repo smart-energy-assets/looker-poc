@@ -203,7 +203,9 @@ view: um_deltas_volumen_caudal_horario {
   measure: porcentaje_horas {
     type: number
     sql: SUM(cast(${nhoras_cero} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
   }
+
 
   measure: porcentaje_horas_mayor_QMIN {
     type: number
