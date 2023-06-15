@@ -146,8 +146,17 @@ view: um_deltas_volumen_caudal_horario {
           END ;;
   }
 
-  measure: nhoras_cero {
+  measure: suma_nhoras_cero {
     type: sum
+    sql:CASE
+          WHEN ${delta_volumen_bruto_procesado} = 0
+          THEN 1
+          ELSE 0
+          END;;
+  }
+
+  measure: nhoras_cero {
+    type: number
     sql:CASE
           WHEN ${delta_volumen_bruto_procesado} = 0
           THEN 1
