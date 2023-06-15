@@ -209,12 +209,14 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: porcentaje_horas_mayor_QMIN {
     type: number
-    sql: sum(cast(${nhoras_mayor_QMIN} as INT64)) / sum(cast(${nhoras_totales} as INT64));;
+    sql: SUM(cast(${nhoras_mayor_QMIN} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
   }
 
   measure: porcentaje_horas_menor_QMIN {
     type: number
-    sql: sum(${nhoras_menor_QMIN}) / sum(${nhoras_totales});;
+    sql: SUM(cast(${nhoras_menor_QMIN})) / SUM(cast(${nhoras_totales}));;
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
   }
 
   measure: count {
