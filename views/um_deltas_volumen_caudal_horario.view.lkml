@@ -147,7 +147,7 @@ view: um_deltas_volumen_caudal_horario {
   }
 
   measure: nhoras_cero {
-    type: number
+    type: sum
     sql:CASE
           WHEN ${delta_volumen_bruto_procesado} = 0
           THEN 1
