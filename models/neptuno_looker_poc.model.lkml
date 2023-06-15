@@ -109,9 +109,24 @@ explore: um_deltas_volumen_caudal_horario {
   hidden: yes
 }
 
+
+explore: salidas_balance {
+  hidden: yes
+}
 explore: um_deltas_volumen_horario {
   hidden: yes
   }
-explore: balances {
 
+explore: entradas_balance {
+   join: salidas_balance {
+    sql_on: ${entradas_balance.primary_key}=${salidas_balance.primary_key} ;;
+#    sql_on:CONCAT(${entradas_balance.in_branch_id},${entradas_balance.ts_date}) = CONCAT(${salidas_balance.out_branch_id},${entradas_balance.ts_date}) ;;
+     relationship: one_to_one
+    type: inner
+  }
+  join: looker_branch {
+    sql_on: ${entradas_balance.in_branch_id}=${looker_branch.id} ;;
+    relationship: one_to_one
+    type: left_outer
+  }
 }

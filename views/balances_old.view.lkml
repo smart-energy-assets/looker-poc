@@ -1,4 +1,4 @@
-view: balances {
+view: balances_old {
   derived_table: {
     sql:  SELECT inBranchId AS ramal,
             SUM(CASE WHEN inBranchId IS NOT NULL THEN delta_E ELSE 0 END) AS consumo_entrada,
