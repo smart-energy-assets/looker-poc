@@ -202,12 +202,12 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: porcentaje_horas {
     type: number
-    sql: SUM(cast$(${nhoras_cero} as INT64)) / SUM(cast$(${nhoras_totales} as INT64));;
+    sql: SUM(cast(${nhoras_cero} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
   }
 
   measure: porcentaje_horas_mayor_QMIN {
     type: number
-    sql: sum(cast(${nhoras_mayor_QMIN} as INT64)) / sum(cast${nhoras_totales} as INT64));;
+    sql: sum(cast(${nhoras_mayor_QMIN} as INT64)) / sum(cast(${nhoras_totales} as INT64));;
   }
 
   measure: porcentaje_horas_menor_QMIN {
