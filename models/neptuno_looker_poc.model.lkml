@@ -104,3 +104,6 @@ explore: delta_factor_compresibilidad_linea_check {
 explore: balances {
 
 }
+
+# BQML ARIMA_PLUS
+explore: arima_prediction_union {}
