@@ -146,7 +146,7 @@ view: um_deltas_volumen_caudal_horario {
           END ;;
   }
 
-  measure: nhoras_cero {
+  dimension: nhoras_cero {
     type: number
     sql: CASE
           WHEN ${delta_volumen_bruto_procesado} = 0
@@ -210,9 +210,9 @@ view: um_deltas_volumen_caudal_horario {
     sql: sum(${nhoras_mayor_QMIN}) / sum(${nhoras_totales});;
   }
 
-  measure: porcentaje_horas_mENOR_QMIN {
+  measure: porcentaje_horas_menor_QMIN {
     type: number
-    sql: sum(${nhoras_menor_QMIN}_QMIN}) / sum(${nhoras_totales});;
+    sql: sum(${nhoras_menor_QMIN}) / sum(${nhoras_totales});;
   }
 
   measure: count {
