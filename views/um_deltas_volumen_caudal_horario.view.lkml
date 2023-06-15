@@ -128,6 +128,109 @@ view: um_deltas_volumen_caudal_horario {
     sql: ${TABLE}.um_tipo ;;
   }
 
+  dimension: nhoras_menor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > 0 AND ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
+  dimension: nhoras_mayor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN 1
+          ELSE 0
+          END ;;
+  }
+
+  measure: suma_nhoras_cero {
+    type: sum
+    sql:CASE
+          WHEN ${delta_volumen_bruto_procesado} = 0
+          THEN 1
+          ELSE 0
+          END;;
+  }
+
+  measure: nhoras_cero {
+    type: number
+    sql:CASE
+          WHEN ${delta_volumen_bruto_procesado} = 0
+          THEN 1
+          ELSE 0
+          END;;
+  }
+
+  dimension: delta_volumen_mayor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END ;;
+  }
+
+  dimension: delta_volumen_menor_QMIN {
+    type: number
+    sql: CASE
+          WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END ;;
+  }
+
+    measure: porcentaje_delta_mayor_QMIN {
+    type: number
+    sql: SUM(
+          CASE WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END
+        ) / SUM(${delta_volumen_bruto_procesado}) ;;
+    value_format_name: percent_2
+  }
+
+  measure: porcentaje_delta_menor_QMIN {
+    type: number
+    sql: SUM(
+          CASE WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          THEN ${delta_volumen_bruto_procesado}
+          ELSE 0
+          END
+        ) / SUM(${delta_volumen_bruto_procesado}) ;;
+    value_format_name: percent_2
+  }
+
+  measure: nhoras_totales{
+    type: number
+    sql: '1' ;;
+  }
+
+  measure: porcentaje_horas {
+    type: number
+    sql: SUM(cast(${nhoras_cero} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
+    value_format: "0.00"
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
+  }
+
+
+  measure: porcentaje_horas_mayor_QMIN {
+    type: number
+    sql: SUM(cast(${nhoras_mayor_QMIN} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
+    value_format: "0.00"
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
+  }
+
+  measure: porcentaje_horas_menor_QMIN {
+    type: number
+    sql: SUM(cast(${nhoras_menor_QMIN} as INT64)) / SUM(cast(${nhoras_totales} as INT64));;
+    value_format: "0.00"
+    drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
+  }
+
   measure: count {
     type: count
     drill_fields: []

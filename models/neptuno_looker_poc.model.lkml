@@ -14,7 +14,7 @@ datagroup: neptuno_looker_poc_default_datagroup {
 
 persist_with: neptuno_looker_poc_default_datagroup
 
-# Explores allow you to join together different views (database tables) based on the
+
 # relationships between fields. By joining a view into an Explore, you make those
 # fields available to users for data analysis.
 # Explores should be purpose-built for specific use cases.
@@ -24,6 +24,52 @@ persist_with: neptuno_looker_poc_default_datagroup
 # To create more sophisticated Explores that involve multiple views, you can use the join parameter.
 # Typically, join parameters require that you define the join type, join relationship, and a sql_on clause.
 # Each joined view also needs to define a primary key.
+
+explore: delta_factor_compresibilidad_linea_recalculo {}
+
+explore: calendario_dia_gas {}
+
+explore: calendario {}
+
+explore: calidad_biometano_1503_a {}
+
+explore: delta_factor_compresibilidad_linea {}
+
+explore: calidad_biometano_b211 {
+  join: infraestructuras {
+    sql_on: ${calidad_biometano_b211.um} = ${infraestructuras.um} ;;
+    relationship: one_to_many
+    type: inner # Could be excluded since left_outer is the default
+  }
+}
+
+explore: delta_factor_compresibilidad_um {}
+
+explore: infraestructuras {}
+
+explore: estudio_mermas {
+
+  join: infraestructuras {
+    sql_on: ${estudio_mermas.um_linea} = ${infraestructuras.um_linea} ;;
+    relationship: one_to_many
+    type: left_outer
+  }
+}
+
+explore: mapa_dispatching {}
+
+explore: piloto_electrovalvulas {}
+
+explore: um_deltas_volumen_caudal_horario {
+  join: infraestructuras{
+    sql_on: ${um_deltas_volumen_caudal_horario.um}=${infraestructuras.um};;
+    relationship: many_to_one
+    type: inner
+  }
+}
+
+explore: um_deltas_volumen_horario {}
+
 
 explore: looker_deltas_historical_daily {
   description: "Consumos Diarios de Volumen y Energia por Linea"
@@ -55,68 +101,14 @@ explore: delta_factor_compresibilidad_linea_check {
   hidden: yes
 }
 
-explore: delta_factor_compresibilidad_linea_recalculo {
-  hidden: yes
-}
-
-explore: calendario_dia_gas {
-  hidden: yes
-}
-
-explore: calendario {
-  hidden: yes
-}
-
-explore: calidad_biometano_1503_a {}
-
-explore: delta_factor_compresibilidad_linea {
-  hidden: yes
-}
-
-explore: calidad_biometano_b211 {
-  join: infraestructuras {
-    sql_on: ${calidad_biometano_b211.um} = ${infraestructuras.um} ;;
-    relationship: one_to_many
-    type: inner # Could be excluded since left_outer is the default
-  }
-}
-
-explore: delta_factor_compresibilidad_um {
-  hidden: yes
-}
-
-explore: infraestructuras {
-  hidden: yes
-}
-
-explore: estudio_mermas {
-  join: infraestructuras {
-    sql_on: ${estudio_mermas.um_linea} = ${infraestructuras.um_linea} ;;
-    relationship: one_to_many
-    type: left_outer
-  }
-}
-
-explore: mapa_dispatching {
-  hidden: yes
-}
-
-explore: piloto_electrovalvulas {
-  hidden: yes
-}
-
-explore: um_deltas_volumen_caudal_horario {
-  hidden: yes
-}
-
 
 explore: salidas_balance {
   hidden: yes
 }
-explore: um_deltas_volumen_horario {
-  hidden: yes
-  }
 
+#explore: balances {
+# a623834d86ab3a2f3565adc52a11b1796e017c0d
+#}
 explore: entradas_balance {
    join: salidas_balance {
     sql_on: ${entradas_balance.primary_key}=${salidas_balance.primary_key} ;;
@@ -130,3 +122,6 @@ explore: entradas_balance {
     type: left_outer
   }
 }
+
+# BQML ARIMA_PLUS
+explore: arima_prediction_union {}
