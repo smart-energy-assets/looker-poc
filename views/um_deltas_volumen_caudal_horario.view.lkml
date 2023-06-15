@@ -192,7 +192,7 @@ view: um_deltas_volumen_caudal_horario {
           ELSE 0
           END
         ) / SUM(${delta_volumen_bruto_procesado}) ;;
-    value_format_name: decimal_2
+    value_format_name: percent_2
   }
 
   measure: nhoras_totales{
