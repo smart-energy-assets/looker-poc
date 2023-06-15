@@ -202,7 +202,7 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: porcentaje_horas {
     type: number
-    sql: SUM(${nhoras_cero}) / SUM(${nhoras_totales});;
+    sql: SUM(convert_toint(${nhoras_cero})) / SUM(convert_toint(${nhoras_totales}));;
   }
 
   measure: porcentaje_horas_mayor_QMIN {
