@@ -54,7 +54,7 @@ view: salidas {
   }
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${salidas.ts_date},${salidas.out_branch_id}) ;;
+    sql: CONCAT(${salidas.ts_date},${salidas.out_branch_id},${name}) ;;
   }
 
 

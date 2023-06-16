@@ -54,7 +54,7 @@ view: entradas {
 
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${entradas.ts_date}, ${entradas.in_branch_id}) ;;
+    sql: CONCAT(${entradas.ts_date}, ${entradas.in_branch_id},${name}) ;;
   }
 
   measure: total_vn {
