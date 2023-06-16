@@ -32,7 +32,6 @@ view: salidas {
 
   }
 
-
   dimension: out_branch_id {
     label: "Looker Measurement Unit Id Ramal de Salida"
     description: ""
