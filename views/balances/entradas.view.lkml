@@ -1,7 +1,7 @@
 view: entradas {
   derived_table: {
     explore_source: looker_deltas_historical_daily {
-      column: ts_time {}
+      column: ts_date {}
       column: total_delta_e {}
       column: total_delta_vn {}
       column: in_branch_id { field: looker_measurement_unit.in_branch_id }
@@ -12,9 +12,9 @@ view: entradas {
       }
     }
   }
-  dimension: ts_time {
+  dimension: ts_date {
     description: ""
-    type: date_time
+    type: date
   }
 
   dimension_group: time_stamp {
@@ -28,7 +28,7 @@ view: entradas {
       quarter,
       year
     ]
-    sql: ${ts_time} ;;
+    sql: ${ts_date} ;;
   }
 
   dimension: total_delta_e {
@@ -48,13 +48,13 @@ view: entradas {
     description: ""
   }
   dimension: name {
-    label: "Looker Measurement Unit Nombre de Unidad de Medida"
+    label: "Nombre de Unidad de Medida de Entrada"
     description: ""
   }
 
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${entradas.ts_time}, ${entradas.in_branch_id}) ;;
+    sql: CONCAT(${entradas.ts_date}, ${entradas.in_branch_id}) ;;
   }
 
   measure: total_vn {

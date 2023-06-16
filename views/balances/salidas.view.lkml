@@ -1,7 +1,7 @@
 view: salidas {
   derived_table: {
     explore_source: looker_deltas_historical_daily {
-      column: ts_time {}
+      column: ts_date {}
       column: out_branch_id { field: looker_measurement_unit.out_branch_id }
       column: name { field: looker_measurement_unit.name }
       column: total_delta_e {}
@@ -12,7 +12,7 @@ view: salidas {
       }
     }
   }
-  dimension: ts_time {
+  dimension: ts_date {
     description: ""
     type: date
   }
@@ -28,7 +28,7 @@ view: salidas {
       quarter,
       year
     ]
-    sql: ${ts_time} ;;
+    sql: ${ts_date} ;;
 
   }
 
@@ -37,7 +37,7 @@ view: salidas {
     description: ""
   }
   dimension: name {
-    label: "Looker Measurement Unit Nombre de Unidad de Medida"
+    label: "Nombre de Unidad de Medida de Salida"
     description: ""
   }
   dimension: total_delta_e {
@@ -54,7 +54,7 @@ view: salidas {
   }
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${salidas.ts_time}, ${salidas.in_branch_id}) ;;
+    sql: CONCAT(${salidas.ts_date},${salidas.out_branch_id}) ;;
   }
 
 
