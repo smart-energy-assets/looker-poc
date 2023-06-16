@@ -1,59 +1,60 @@
-# If necessary, uncomment the line below to include explore_source.
-
-# include: "neptuno_looker_poc.model.lkml"
-
-view: entradas_balance {
+view: entradas {
   derived_table: {
     explore_source: looker_deltas_historical_daily {
-      column: ts_date {}
+      column: ts_time {}
       column: total_delta_e {}
       column: total_delta_vn {}
       column: in_branch_id { field: looker_measurement_unit.in_branch_id }
+      column: name { field: looker_measurement_unit.name }
       filters: {
-        field: looker_deltas_historical_daily.ts_year
-        value: "1 years"
+        field: looker_measurement_unit.in_branch_id
+        value: "-NULL"
       }
-      expression_custom_filter: (NOT is_null(${looker_measurement_unit.in_branch_name}) OR NOT is_null( ${looker_measurement_unit.out_branch_name})) ;;
     }
   }
-  dimension: ts_date {
+  dimension: ts_time {
     description: ""
-    type: date
+    type: date_time
   }
 
-#  dimension_group: time_stamp {
-#    type: time
-#    timeframes: [
-#      raw,
-#      time,
-#      date,
-#      week,
-#      month,
-#      quarter,
-#      year
-#    ]
-#    sql: ${ts_date} ;;
-#  }
+  dimension_group: time_stamp {
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    sql: ${ts_time} ;;
+  }
 
   dimension: total_delta_e {
-    label: "Consumo en Energía"
+    label: "Looker Deltas Historical Daily Consumo en Energía"
     description: ""
     value_format: "0.000,,\" GWh\""
     type: number
   }
   dimension: total_delta_vn {
-    label: "Consumo en Volumen Normalizado"
+    label: "Looker Deltas Historical Daily Consumo en Volumen Normalizado"
     description: ""
     value_format: "0.000,\" dam3\""
     type: number
   }
   dimension: in_branch_id {
-    label: "Id Ramal de Entrada"
+    label: "Looker Measurement Unit Id Ramal de Entrada"
     description: ""
   }
+  dimension: name {
+    label: "Looker Measurement Unit Nombre de Unidad de Medida"
+    description: ""
+  }
+
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${TABLE}.ts_date, ${TABLE}.in_branch_id) ;;
+    sql: CONCAT(${entradas.ts_time}, ${entradas.in_branch_id}) ;;
   }
 
   measure: total_vn {
@@ -85,5 +86,6 @@ view: entradas_balance {
     #drill_fields: [looker_measurement_unit.name,looker_lines.name]
     label: "Consumo Medio en Volumen Normalizado"
   }
+
 
 }
