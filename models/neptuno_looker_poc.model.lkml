@@ -127,8 +127,8 @@ explore: entradas {
   join: salidas {
     sql_on: ${entradas.primary_key}=${salidas.primary_key} ;;
 #    sql_on:CONCAT(${entradas_balance.in_branch_id},${entradas_balance.ts_date}) = CONCAT(${salidas_balance.out_branch_id},${entradas_balance.ts_date}) ;;
-    relationship: one_to_one
-    type: inner
+    relationship: many_to_many
+    type: full_outer
   }
   join: looker_branch {
     sql_on: ${entradas.in_branch_id}=${looker_branch.id} ;;
