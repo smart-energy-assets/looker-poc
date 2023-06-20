@@ -176,7 +176,7 @@ view: um_deltas_volumen_caudal_horario {
   dimension: delta_volumen_menor_QMIN {
     type: number
     sql: CASE
-          WHEN ${delta_volumen_bruto_procesado} <= ${um_caudal_minimo}
+          WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
           THEN ${delta_volumen_bruto_procesado}
           ELSE 0
           END ;;
