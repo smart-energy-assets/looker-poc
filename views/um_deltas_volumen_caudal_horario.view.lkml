@@ -194,7 +194,10 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: porcentaje_delta_menor_QMIN {
     type: number
-    sql: SUM(CASE
+    sql: CASE
+          WHEN SUM(${delta_volumen_bruto_procesado})=0 THEN NULL
+          ELSE
+          SUM(CASE
           WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
           THEN ${delta_volumen_bruto_procesado}
           ELSE 0
