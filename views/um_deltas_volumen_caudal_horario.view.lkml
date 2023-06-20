@@ -223,6 +223,12 @@ view: um_deltas_volumen_caudal_horario {
     drill_fields: [um_deltas_volumen_caudal_horario.delta_volumen_bruto_procesado]
   }
 
+  measure: suma_porcentajes {
+    type: sum
+    sql: ${delta_volumen_menor_QMIN}+${delta_volumen_mayor_QMIN}) ;;
+    value_format_name: percent_2
+  }
+
   measure: count {
     type: count
     drill_fields: []
