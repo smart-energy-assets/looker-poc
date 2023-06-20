@@ -201,7 +201,7 @@ view: um_deltas_volumen_caudal_horario {
           WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
           THEN ${delta_volumen_bruto_procesado}
           ELSE 0
-          END) / SUM(${delta_volumen_bruto_procesado}) ;;
+          END) / NULLIF(SUM(${delta_volumen_bruto_procesado}), 0);;
     value_format_name: percent_2
   }
 
