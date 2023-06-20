@@ -222,8 +222,8 @@ view: um_deltas_volumen_caudal_horario {
   }
 
   measure: suma_porcentajes {
-    type: sum
-    sql: ${delta_volumen_menor_QMIN}+${delta_volumen_mayor_QMIN} ;;
+    type: number
+    sql: ${porcentaje_delta_menor_QMIN}+${porcentaje_delta_mayor_QMIN} ;;
   }
 
   measure: count {
