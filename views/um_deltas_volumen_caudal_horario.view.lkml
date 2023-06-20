@@ -176,7 +176,7 @@ view: um_deltas_volumen_caudal_horario {
   dimension: delta_volumen_menor_QMIN {
     type: number
     sql: CASE
-          WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
+          WHEN ${delta_volumen_bruto_procesado} =< ${um_caudal_minimo}
           THEN ${delta_volumen_bruto_procesado}
           ELSE 0
           END ;;
@@ -184,24 +184,13 @@ view: um_deltas_volumen_caudal_horario {
 
     measure: porcentaje_delta_mayor_QMIN {
     type: number
-    sql: SUM(CASE
-          WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
-          THEN ${delta_volumen_bruto_procesado}
-          ELSE 0
-          END ) / SUM(${delta_volumen_bruto_procesado}) ;;
+    sql: SUM(${delta_volumen_mayor_QMIN}) / SUM(${delta_volumen_bruto_procesado}) ;;
     value_format_name: percent_2
   }
 
   measure: porcentaje_delta_menor_qmin_1 {
     type: number
-    sql: CASE
-          WHEN SUM(${delta_volumen_bruto_procesado})=0 THEN NULL
-          ELSE
-          SUM(CASE
-          WHEN ${delta_volumen_bruto_procesado} < ${um_caudal_minimo}
-          THEN ${delta_volumen_bruto_procesado}
-          ELSE 0
-          END) / NULLIF(SUM(${delta_volumen_bruto_procesado}), 0);;
+    sql:  SUM(${delta_volumen_menor_QMIN}) / NULLIF(SUM(${delta_volumen_bruto_procesado}), 0);;
     value_format_name: percent_2
   }
 
