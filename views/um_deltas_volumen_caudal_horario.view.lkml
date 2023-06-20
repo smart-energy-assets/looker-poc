@@ -184,15 +184,13 @@ view: um_deltas_volumen_caudal_horario {
 
     measure: porcentaje_delta_mayor_QMIN {
     type: number
-    sql: SUM(${delta_volumen_mayor_QMIN}
-        ) / SUM(${delta_volumen_bruto_procesado}) ;;
+    sql: SUM(${delta_volumen_mayor_QMIN}) / SUM(${delta_volumen_bruto_procesado}) ;;
     value_format_name: percent_2
   }
 
   measure: porcentaje_delta_menor_QMIN {
     type: number
-    sql: SUM(${delta_volumen_menor_QMIN})
-   / SUM(${delta_volumen_bruto_procesado}) ;;
+    sql: SUM(${delta_volumen_menor_QMIN}) / SUM(${delta_volumen_bruto_procesado}) ;;
     value_format_name: percent_2
   }
 
@@ -225,7 +223,7 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: suma_porcentajes {
     type: sum
-    sql: ${delta_volumen_menor_QMIN}+${delta_volumen_mayor_QMIN}) ;;
+    sql: ${delta_volumen_menor_QMIN}+${delta_volumen_mayor_QMIN} ;;
     value_format_name: percent_2
   }
 
