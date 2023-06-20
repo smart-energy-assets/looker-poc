@@ -192,7 +192,7 @@ view: um_deltas_volumen_caudal_horario {
     value_format_name: percent_2
   }
 
-  measure: porcentaje_delta_menor_QMIN {
+  measure: porcentaje_delta_menor_qmin_1 {
     type: number
     sql: CASE
           WHEN SUM(${delta_volumen_bruto_procesado})=0 THEN NULL
@@ -234,7 +234,7 @@ view: um_deltas_volumen_caudal_horario {
 
   measure: suma_porcentajes {
     type: number
-    sql: ${porcentaje_delta_menor_QMIN}+${porcentaje_delta_mayor_QMIN};;
+    sql: ${porcentaje_delta_menor_qmin_1}+${porcentaje_delta_mayor_QMIN};;
     value_format_name: percent_2
   }
 
