@@ -186,7 +186,7 @@ view: um_deltas_volumen_caudal_horario {
     type: number
     sql: CASE
           WHEN SUM(${delta_volumen_bruto_procesado}) = 0 THEN NULL
-         ELSE SUM(CASE
+          ELSE SUM(CASE
           WHEN ${delta_volumen_bruto_procesado} > ${um_caudal_minimo}
           THEN ${delta_volumen_bruto_procesado}
           ELSE 0
