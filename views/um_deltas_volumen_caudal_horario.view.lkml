@@ -227,22 +227,6 @@ view: um_deltas_volumen_caudal_horario {
     value_format_name: percent_2
   }
 
-  dimension: delta_volumen_igual_QMIN {
-    type: number
-    sql: CASE
-          WHEN ${delta_volumen_bruto_procesado} = ${um_caudal_minimo}
-          THEN ${delta_volumen_bruto_procesado}
-          ELSE 0
-          END ;;
-  }
-
-  measure: porcentaje_delta_igual_QMIN {
-    type: number
-    sql:  SUM(${delta_volumen_igual_QMIN}) / SUM(${delta_volumen_bruto_procesado});;
-    value_format_name: percent_2
-  }
-
-
   measure: count {
     type: count
     drill_fields: []
