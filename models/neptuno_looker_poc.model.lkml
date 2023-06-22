@@ -14,7 +14,7 @@ datagroup: neptuno_looker_poc_default_datagroup {
 
 persist_with: neptuno_looker_poc_default_datagroup
 
-# JFC
+
 # relationships between fields. By joining a view into an Explore, you make those
 # fields available to users for data analysis.
 # Explores should be purpose-built for specific use cases.
@@ -125,3 +125,8 @@ explore: entradas_balance {
 
 # BQML ARIMA_PLUS
 explore: arima_prediction_union {}
+
+# Proyecto DLC: Automatización de balances
+explore: balances_section_energy_daily {
+
+}
