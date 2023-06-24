@@ -135,6 +135,12 @@ explore: entradas {
     relationship: one_to_one
     type: left_outer
   }
+  join: stock {
+    #sql_on: ((${entradas.in_branch_id}=${stock.branch_id}id}) AND (${entradas.ts_date_date}=${stock.ts_date_date));;
+    sql_on: ${entradas.primary_key}=${stock.primary_key} ;;
+    relationship: one_to_one
+    type:left_outer
+  }
 
 }
 

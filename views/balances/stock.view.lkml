@@ -11,14 +11,26 @@ view: stock {
       }
     }
   }
+
+  dimension_group: ts_date {
+    description: "Fecha"
+    type: time
+    timeframes: [
+      raw,
+      time,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    }
+
   dimension: primary_key {
     primary_key: yes
-    sql: CONCAT(${ts_date},${branch_id}) ;;
+    sql: CONCAT(${ts_date_date},${branch_id}) ;;
   }
-  dimension: ts_date {
-    description: ""
-    type: date
-  }
+
   dimension: branch_id {
     description: ""
   }
