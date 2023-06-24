@@ -138,7 +138,7 @@ explore: entradas {
 
 }
 
-
+explore: branch_union_stock_daily {}
 # BQML ARIMA_PLUS
 explore: arima_prediction_union {}
 
