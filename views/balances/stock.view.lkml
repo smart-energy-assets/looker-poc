@@ -44,4 +44,20 @@ view: stock {
     value_format: "0.000,\" dam3\""
     type: number
   }
+
+  measure: total_stock_vn {
+    type: sum
+    sql: ${total_stock_vn_diff} ;;
+    value_format: "0.000,\" dam3\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Total Delta stock en Volumen Normalizado"
+  }
+  measure: total_stock_e {
+    type: sum
+    sql: ${total_stock_e_diff} ;;
+    value_format: "0.000,,\" GWh\""
+    #drill_fields: [looker_measurement_unit.name,looker_lines.name]
+    label: "Total Delta Stock en Energia"
+  }
+
 }

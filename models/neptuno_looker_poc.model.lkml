@@ -82,7 +82,7 @@ explore: looker_deltas_historical_daily {
   join: looker_measurement_unit{
     sql_on: ${looker_deltas_historical_daily.mu_name}=${looker_measurement_unit.id};;
     relationship: many_to_one
-    type: inner
+    type: left_outer
   }
   join: looker_position {
     sql_on: ${looker_measurement_unit.position_id}=${looker_position.id} ;;
