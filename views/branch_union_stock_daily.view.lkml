@@ -22,6 +22,7 @@ view: branch_union_stock_daily {
   dimension: branch_id {
     type: string
     sql: ${TABLE}.branchId ;;
+    drill_fields: [microsection_id]
   }
 
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.
