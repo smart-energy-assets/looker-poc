@@ -177,4 +177,9 @@ view: balances_section_energy_daily_deduplicated {
     type: sum
     sql: ${stock_e} ;;
   }
+
+  measure: existencias_finales {
+    type: sum
+    sql: ${stock_e} - ${stock_e_diff} ;;
+  }
 }
