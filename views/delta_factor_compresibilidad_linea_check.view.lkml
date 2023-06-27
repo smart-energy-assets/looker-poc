@@ -220,12 +220,24 @@ view: delta_factor_compresibilidad_linea_check {
     sql: ${e_slm} ;;
   }
 
+  measure: suma_delta_e {
+    type: sum
+    sql: ${delta_e} ;;
+  }
+
   measure: diferencia_de_energia {
     type:  number
     sql:  ${suma_e_neptuno}-${suma_e_slm} ;;
     label: "Diff. E"
     drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
   }
+
+  measure: energia_GWh {
+    type: number
+    sql: ${suma_delta_e}/1000000 ;;
+  }
+
+
 
   measure: count {
     type: count
