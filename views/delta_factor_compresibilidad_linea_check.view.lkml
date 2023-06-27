@@ -54,11 +54,13 @@ view: delta_factor_compresibilidad_linea_check {
     dimension: e_neptuno {
       type: number
       sql: ${TABLE}.e_neptuno ;;
+      drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
     }
 
     dimension: e_slm {
       type: number
       sql: ${TABLE}.e_slm ;;
+      drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
     }
 
   dimension: factor_conversion_conversor {
