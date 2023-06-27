@@ -209,9 +209,20 @@ view: delta_factor_compresibilidad_linea_check {
     sql: ${TABLE}.zn_slm ;;
   }
 
+
+  measure: suma_e_neptuno {
+    type: sum
+    sql: ${e_neptuno} ;;
+  }
+
+  measure: suma_e_slm {
+    type: sum
+    sql: ${e_slm} ;;
+  }
+
   measure: diferencia_de_energia {
     type:  number
-    sql:  ${e_neptuno}-${e_slm} ;;
+    sql:  ${suma_e_neptuno}-${suma_e_slm} ;;
     label: "Diff. E"
     drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
   }
