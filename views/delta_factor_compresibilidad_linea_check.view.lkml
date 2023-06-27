@@ -216,12 +216,12 @@ view: delta_factor_compresibilidad_linea_check {
   }
 
   measure: suma_e_slm {
-    type: number
+    type: sum
     sql: ${e_slm}/1000000 ;;
   }
 
   measure: suma_delta_e {
-    type: number
+    type: sum
     sql: ${delta_e} ;;
   }
 
