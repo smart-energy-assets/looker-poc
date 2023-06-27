@@ -211,7 +211,6 @@ view: delta_factor_compresibilidad_linea_check {
     type:  number
     sql:  ${e_neptuno}-${e_slm} ;;
     label: "Diff. E"
-    drill_fields: [delta_factor_compresibilidad_linea_check.e_neptuno]
   }
 
   measure: count {
