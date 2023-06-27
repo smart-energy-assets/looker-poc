@@ -217,12 +217,12 @@ view: delta_factor_compresibilidad_linea_check {
 
   measure: suma_e_slm {
     type: sum
-    sql: ${e_slm} ;;
+    sql: ${e_slm}/1000000 ;;
   }
 
   measure: suma_delta_e {
     type: sum
-    sql: ${delta_e} ;;
+    sql: ${delta_e}/1000000 ;;
   }
 
   measure: diferencia_de_energia_GWh {
