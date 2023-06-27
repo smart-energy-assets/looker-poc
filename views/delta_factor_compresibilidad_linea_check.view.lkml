@@ -212,17 +212,17 @@ view: delta_factor_compresibilidad_linea_check {
 
   measure: suma_e_neptuno {
     type: sum
-    sql: ${e_neptuno} ;;
+    sql: ${e_neptuno}/1000000 ;;
   }
 
   measure: suma_e_slm {
-    type: sum
+    type: number
     sql: ${e_slm}/1000000 ;;
   }
 
   measure: suma_delta_e {
-    type: sum
-    sql: ${delta_e}/1000000 ;;
+    type: number
+    sql: ${delta_e} ;;
   }
 
   measure: diferencia_de_energia_GWh {
