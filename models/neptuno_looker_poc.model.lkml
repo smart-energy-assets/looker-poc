@@ -99,6 +99,11 @@ explore: looker_deltas_historical_daily {
 
 explore: delta_factor_compresibilidad_linea_check {
   hidden: yes
+  join: infraestructuras{
+    sql_on: ${delta_factor_compresibilidad_linea_check.um}=${infraestructuras.um};;
+    relationship: many_to_one
+    type: inner
+  }
 }
 
 
