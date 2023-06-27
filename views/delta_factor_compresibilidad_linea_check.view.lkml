@@ -51,15 +51,15 @@ view: delta_factor_compresibilidad_linea_check {
     sql: ${TABLE}.dr_slm ;;
   }
 
-  dimension: e_neptuno {
-    type: number
-    sql: ${TABLE}.e_neptuno ;;
-  }
+    dimension: e_neptuno {
+      type: number
+      sql: ${TABLE}.e_neptuno ;;
+    }
 
-  dimension: e_slm {
-    type: number
-    sql: ${TABLE}.e_slm ;;
-  }
+    dimension: e_slm {
+      type: number
+      sql: ${TABLE}.e_slm ;;
+    }
 
   dimension: factor_conversion_conversor {
     type: number
@@ -209,7 +209,7 @@ view: delta_factor_compresibilidad_linea_check {
 
   measure: diferencia_de_energia {
     type:  number
-    sql:  ${e_neptuno} - ${e_slm} ;;
+    sql:  ${e_neptuno}-${e_slm} ;;
     label: "Diff. E"
   }
 
