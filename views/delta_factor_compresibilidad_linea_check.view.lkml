@@ -207,11 +207,11 @@ view: delta_factor_compresibilidad_linea_check {
     sql: ${TABLE}.zn_slm ;;
   }
 
-  measure: diferencia_de_energia {
+  dimension: diferencia_de_energia {
     type:  number
     sql:  ${e_neptuno}-${e_slm} ;;
     label: "Diff. E"
-    drill_fields: [delta_factor_comprensibilidad_linea_check.e_neptuno]
+    drill_fields: [delta_factor_compresibilidad_linea_check.e_neptuno]
   }
 
   measure: count {
