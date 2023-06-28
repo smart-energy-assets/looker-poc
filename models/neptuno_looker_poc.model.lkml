@@ -145,11 +145,4 @@ explore: arima_prediction_union {}
 # Proyecto DLC: Automatización de balances
 explore: balances_section_energy_daily {}
 
-explore: balances_section_energy_daily_deduplicated {
-  sql_always_where:
-    ${section_name} IN (
-      "RT_ENA",
-      "RT_ETN",
-      "TR_SAG")
-  ;;
-}
+explore: balances_section_energy_daily_deduplicated {}
