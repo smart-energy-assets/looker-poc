@@ -236,7 +236,7 @@ view: delta_factor_compresibilidad_linea_check {
   measure: energia_GWh {
     type: number
     sql: ${suma_delta_e}/1000000 ;;
-    value_format: "0.00"
+    value_format: "0.0 'mil'"
   }
 
   measure: avg_presion {
