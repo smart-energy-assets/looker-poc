@@ -8,7 +8,7 @@ view: balances_section_energy_daily_deduplicated {
         FROM
           `sea-produccion.target_reporting.balances_section_energy_daily`
         WHERE
-          section_name IN ("TR_SAG", "RT_ENA", "RT_ETN")
+          section_name = {% parameter infrastructure_parameter %}
           AND TS >= {% date_start date_filter %}
           AND TS <= {% date_end date_filter %}
         ORDER BY
@@ -176,6 +176,22 @@ view: balances_section_energy_daily_deduplicated {
     type: date
   }
 
+  parameter: infrastructure_parameter {
+    type:  string
+    allowed_value: {
+      label: "SAGGAS"
+      value: "TR_SAG"
+    }
+    allowed_value: {
+      label: "ENAGAS"
+      value: "RT_ENA"
+    }
+    allowed_value: {
+      label: "ETN"
+      value: "RT_ETN"
+    }
+  }
+
   dimension: filter_start {
     type: date
     hidden: yes
@@ -207,23 +223,48 @@ view: balances_section_energy_daily_deduplicated {
   # MEASURES ADDED
   measure: existencias_iniciales {
     type: sum
-    sql: ${stock_e} ;;
+    sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
   }
 
   measure: existencias_finales {
     type: sum
-    sql: ${stock_e} ;;
+    sql: CAST(${stock_e} AS INT) ;;
     filters: [is_end: "Yes"]
   }
 
   measure: medida_de_entrada {
     type: sum
-    sql: ${totalizados_in_e} ;;
+    sql: CAST(${totalizados_in_e} AS INT) ;;
   }
 
   measure: medida_de_salida {
     type:  sum
-    sql: ${totalizados_out_e} ;;
+    sql: CAST(${totalizados_out_e} AS INT) ;;
+  }
+
+  measure: medida_de_gas_de_operacion {
+    type: sum
+    sql: CAST(${totalizados_self_e} AS INT) ;;
+    drill_fields: [details*]
+  }
+
+  set: details {
+    fields: [EC, ERM]
+  }
+
+  measure: EC {
+    type: sum
+    sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
+  }
+
+  measure: ERM {
+    type: sum
+    sql: CAST(${delta_e_total_cald} AS INT) ;;
+  }
+
+  measure: perdidas_y_DDM {
+    type: sum
+    sql: CAST(${mermas_e} AS INT) ;;
   }
 }
