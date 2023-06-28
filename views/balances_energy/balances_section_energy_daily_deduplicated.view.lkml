@@ -1,30 +1,27 @@
 view: balances_section_energy_daily_deduplicated {
   derived_table: {
     sql:
+      WITH temp_table AS (
+        SELECT
+          *,
+          ROW_NUMBER() OVER(PARTITION BY TS, section_name ORDER BY TS DESC) AS rn
+        FROM
+          `sea-produccion.target_reporting.balances_section_energy_daily`
+        WHERE
+          section_name IN ("TR_SAG", "RT_ENA", "RT_ETN")
+          AND TS >= {% date_start date_filter %}
+          AND TS <= {% date_end date_filter %}
+        ORDER BY
+          TS DESC
+      )
+
       SELECT
-        DISTINCT
-          TS,
-          mu_last_update,
-          last_update,
-          section_id,
-          section_name,
-          measurementunit_id,
-          measurementunit_name,
-          role,
-          `source`,
-          delta_E,
-          totalizados_IN_E,
-          totalizados_OUT_E,
-          totalizados_SELF_E,
-          stock_E,
-          stock_E_diff,
-          delta_E_cald,
-          delta_E_fuelgas,
-          mermas_E,
-          delta_E_total_fuelgas,
-          delta_E_total_cald
+        *
+        EXCEPT(rn)
       FROM
-        `sea-produccion.target_reporting.balances_section_energy_daily`
+        temp_table
+      WHERE
+        rn = 1
     ;;
   }
 
@@ -173,13 +170,60 @@ view: balances_section_energy_daily_deduplicated {
     drill_fields: [section_name, measurementunit_name]
   }
 
+
+  # FILTERS ADDED
+  filter: date_filter {
+    type: date
+  }
+
+  dimension: filter_start {
+    type: date
+    hidden: yes
+    sql: {% date_start date_filter %} ;;
+  }
+
+  dimension: is_start {
+    type: yesno
+    hidden: yes
+    sql: ${ts_date} = ${filter_start} ;;
+  }
+
+  dimension: filter_end {
+    type: date
+    sql:
+      IF(
+        {% date_end date_filter %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
+        TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY),
+        {% date_end date_filter %}) ;;
+  }
+
+  dimension: is_end {
+    type: yesno
+    hidden: yes
+    sql: ${ts_date} = ${filter_end} ;;
+  }
+
+
+  # MEASURES ADDED
   measure: existencias_iniciales {
     type: sum
     sql: ${stock_e} ;;
+    filters: [is_start: "Yes"]
   }
 
   measure: existencias_finales {
     type: sum
-    sql: ${stock_e} - ${stock_e_diff} ;;
+    sql: ${stock_e} ;;
+    filters: [is_end: "Yes"]
+  }
+
+  measure: medida_de_entrada {
+    type: sum
+    sql: ${totalizados_in_e} ;;
+  }
+
+  measure: medida_de_salida {
+    type:  sum
+    sql: ${totalizados_out_e} ;;
   }
 }
