@@ -174,21 +174,21 @@ view: balances_section_energy_daily_deduplicated {
   # FILTERS ADDED
   filter: date_filter {
     type: date
-    description: "Filtro "
+    description: "Filtro temporal de uso obligatotio, se aplica a todos los resultados que devuelve la tabla."
   }
 
   parameter: infrastructure_parameter {
     type:  string
     allowed_value: {
-      label: "SAGGAS"
+      label: "TR_SAGS"
       value: "TR_SAG"
     }
     allowed_value: {
-      label: "ENAGAS"
+      label: "RT_ENA"
       value: "RT_ENA"
     }
     allowed_value: {
-      label: "ETN"
+      label: "RT_ETN"
       value: "RT_ETN"
     }
   }
@@ -227,6 +227,7 @@ view: balances_section_energy_daily_deduplicated {
     label: "Existencias Iniciales"
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
+    description: "Existencias en kWh registrados el primer dia del filtro temporal."
   }
 
   measure: end_stock {
@@ -236,39 +237,53 @@ view: balances_section_energy_daily_deduplicated {
     filters: [is_end: "Yes"]
   }
 
+  measure: stock_delta {
+    type: number
+    label: "Delta de Existencias"
+    sql: ${initial_stock} - ${end_stock} ;;
+  }
+
   measure: input_measure {
     type: sum
     label: "Medida de Entrada"
     sql: CAST(${totalizados_in_e} AS INT) ;;
+    value_format_name: energy_formatting
   }
 
   measure: output_measure {
     type:  sum
     label: "Medida de Salida"
     sql: CAST(${totalizados_out_e} AS INT) ;;
+    value_format_name: energy_formatting
+
   }
 
   measure: operational_gas_measure {
     type: sum
     label: "Medida de Gas de Operación"
     sql: CAST(${totalizados_self_e} AS INT) ;;
+    value_format_name: energy_formatting
+    # drill_fields: [ec, erm]
   }
 
   measure: ec {
     type: sum
     label: "EC"
     sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
+    value_format_name: energy_formatting
   }
 
   measure: erm {
     type: sum
     label: "ERM"
     sql: CAST(${delta_e_total_cald} AS INT) ;;
+    value_format_name: energy_formatting
   }
 
   measure: ddm_and_loses {
     type: sum
     label: "Perdidas y DDM"
     sql: CAST(${mermas_e} AS INT) ;;
+    value_format_name: energy_formatting
   }
 }
