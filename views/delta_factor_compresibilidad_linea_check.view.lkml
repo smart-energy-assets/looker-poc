@@ -51,15 +51,17 @@ view: delta_factor_compresibilidad_linea_check {
     sql: ${TABLE}.dr_slm ;;
   }
 
-  dimension: e_neptuno {
-    type: number
-    sql: ${TABLE}.e_neptuno ;;
-  }
+    dimension: e_neptuno {
+      type: number
+      sql: ${TABLE}.e_neptuno ;;
+      drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
+    }
 
-  dimension: e_slm {
-    type: number
-    sql: ${TABLE}.e_slm ;;
-  }
+    dimension: e_slm {
+      type: number
+      sql: ${TABLE}.e_slm ;;
+      drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
+    }
 
   dimension: factor_conversion_conversor {
     type: number
@@ -205,6 +207,41 @@ view: delta_factor_compresibilidad_linea_check {
   dimension: zn_slm {
     type: number
     sql: ${TABLE}.zn_slm ;;
+  }
+
+
+  measure: suma_e_neptuno {
+    type: sum
+    sql: ${e_neptuno}/1000000 ;;
+  }
+
+  measure: suma_e_slm {
+    type: sum
+    sql: ${e_slm}/1000000 ;;
+  }
+
+  measure: suma_delta_e {
+    type: sum
+    sql: ${delta_e} ;;
+  }
+
+  measure: diferencia_de_energia_GWh {
+    type:  number
+    sql:  ${suma_e_neptuno}-${suma_e_slm} ;;
+    label: "Diff. E"
+    value_format: "0.00"
+    drill_fields: [delta_factor_compresibilidad_linea_check.fecha_lectura_date]
+  }
+
+  measure: energia_GWh {
+    type: number
+    sql: ${suma_delta_e}/1000000 ;;
+    value_format: "0.0"
+  }
+
+  measure: avg_presion {
+    type: number
+    sql: AVG(${presion}) ;;
   }
 
   measure: count {

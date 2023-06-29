@@ -98,7 +98,11 @@ explore: looker_deltas_historical_daily {
 }
 
 explore: delta_factor_compresibilidad_linea_check {
-  hidden: yes
+  join: infraestructuras{
+    sql_on: ${delta_factor_compresibilidad_linea_check.um}=${infraestructuras.um};;
+    relationship: many_to_one
+    type: inner
+  }
 }
 
 
@@ -146,10 +150,12 @@ explore: arima_prediction_union {}
 explore: balances_section_energy_daily {}
 
 explore: balances_section_energy_daily_deduplicated {
-  sql_always_where:
-    ${section_name} IN (
-      "RT_ENA",
-      "RT_ETN",
-      "TR_SAG")
-  ;;
+  always_filter: {
+    filters: [balances_section_energy_daily_deduplicated.date_filter: "this month"]
+  }
+}
+
+named_value_format: energy_formatting {
+  value_format: "#,##0\" kWh\""
+  strict_value_format: yes
 }
