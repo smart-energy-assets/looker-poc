@@ -180,7 +180,7 @@ view: balances_section_energy_daily_deduplicated {
   parameter: infrastructure_parameter {
     type:  string
     allowed_value: {
-      label: "TR_SAGS"
+      label: "TR_SAG"
       value: "TR_SAG"
     }
     allowed_value: {
@@ -228,6 +228,7 @@ view: balances_section_energy_daily_deduplicated {
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
     description: "Existencias en kWh registrados el primer dia del filtro temporal."
+    value_format_name: energy_formatting
   }
 
   measure: end_stock {
@@ -235,12 +236,14 @@ view: balances_section_energy_daily_deduplicated {
     label: "Existencias Finales"
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_end: "Yes"]
+    value_format_name: energy_formatting
   }
 
   measure: stock_delta {
     type: number
     label: "Delta de Existencias"
     sql: ${initial_stock} - ${end_stock} ;;
+    value_format_name: energy_formatting
   }
 
   measure: input_measure {
@@ -268,14 +271,14 @@ view: balances_section_energy_daily_deduplicated {
 
   measure: ec {
     type: sum
-    label: "EC"
+    label: "Medida de Gas de Operación - EC"
     sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
     value_format_name: energy_formatting
   }
 
   measure: erm {
     type: sum
-    label: "ERM"
+    label: "Medida de Gas de Operación - ERM"
     sql: CAST(${delta_e_total_cald} AS INT) ;;
     value_format_name: energy_formatting
   }

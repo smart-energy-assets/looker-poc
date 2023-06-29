@@ -155,6 +155,10 @@ explore: balances_section_energy_daily_deduplicated {
   }
 }
 
+explore: balances_section_energy_daily_report {}
+
+explore: balances_energy_open_closed {}
+
 named_value_format: energy_formatting {
   value_format: "#,##0\" kWh\""
   strict_value_format: yes
