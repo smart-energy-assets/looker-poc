@@ -108,6 +108,41 @@ view: looker_deltas_historical_daily {
     sql: ${TABLE}.TS ;;
   }
 
+  dimension_group: ts_dia_de_gas {
+    type: time
+    datatype: date
+    timeframes: [raw, date, week, month, quarter, year]
+    sql: CASE WHEN EXTRACT(HOUR FROM ${ts_raw}) BETWEEN 0 AND 4
+              THEN CAST(${ts_raw} - INTERVAL 1 DAY AS DATE)
+              ELSE CAST (${ts_raw} AS DATE)
+         END  ;;
+  }
+
+  parameter: selector_de_dia{
+    label: "Selector de día (UTC/Día De Gas)"
+    description: "Selecciona qué representa la dimensión Ts Date: día UTC o día de gas"
+    type: unquoted
+    default_value: "Gas"
+    allowed_value: {
+      label: "Día UTC"
+      value: "UTC"
+    }
+    allowed_value: {
+      label: "Día de Gas"
+      value: "Gas"
+    }
+  }
+
+  dimension: ts_dinamico {
+    label: "Ts"
+    label_from_parameter: selector_de_dia
+    sql:
+      {% if selector_de_dia._parameter_value == "Gas" %} ${ts_dia_de_gas_date}
+      {% else %} ${ts_date}
+      {% endif %}
+      ;;
+  }
+
   # A measure is a field that uses a SQL aggregate function. Here are defined sum and average
   # measures for this dimension, but you can also add measures of many different aggregates.
   # Click on the type parameter to see all the options in the Quick Help panel on the right.
