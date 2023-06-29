@@ -246,11 +246,6 @@ view: balances_section_energy_daily_deduplicated {
   measure: medida_de_gas_de_operacion {
     type: sum
     sql: CAST(${totalizados_self_e} AS INT) ;;
-    drill_fields: [details*]
-  }
-
-  set: details {
-    fields: [EC, ERM]
   }
 
   measure: EC {
