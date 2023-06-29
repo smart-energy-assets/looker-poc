@@ -16,13 +16,13 @@ view: balances_section_energy_daily_deduplicated {
       )
 
       SELECT
-        *
-        EXCEPT(rn)
+      *
+      EXCEPT(rn)
       FROM
-        temp_table
+      temp_table
       WHERE
-        rn = 1
-    ;;
+      rn = 1
+      ;;
   }
 
   dimension_group: ts {
@@ -174,6 +174,7 @@ view: balances_section_energy_daily_deduplicated {
   # FILTERS ADDED
   filter: date_filter {
     type: date
+    description: "Filtro "
   }
 
   parameter: infrastructure_parameter {
@@ -221,45 +222,53 @@ view: balances_section_energy_daily_deduplicated {
 
 
   # MEASURES ADDED
-  measure: existencias_iniciales {
+  measure: initial_stock {
     type: sum
+    label: "Existencias Iniciales"
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
   }
 
-  measure: existencias_finales {
+  measure: end_stock {
     type: sum
+    label: "Existencias Finales"
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_end: "Yes"]
   }
 
-  measure: medida_de_entrada {
+  measure: input_measure {
     type: sum
+    label: "Medida de Entrada"
     sql: CAST(${totalizados_in_e} AS INT) ;;
   }
 
-  measure: medida_de_salida {
+  measure: output_measure {
     type:  sum
+    label: "Medida de Salida"
     sql: CAST(${totalizados_out_e} AS INT) ;;
   }
 
-  measure: medida_de_gas_de_operacion {
+  measure: operational_gas_measure {
     type: sum
+    label: "Medida de Gas de Operación"
     sql: CAST(${totalizados_self_e} AS INT) ;;
   }
 
-  measure: EC {
+  measure: ec {
     type: sum
+    label: "EC"
     sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
   }
 
-  measure: ERM {
+  measure: erm {
     type: sum
+    label: "ERM"
     sql: CAST(${delta_e_total_cald} AS INT) ;;
   }
 
-  measure: perdidas_y_DDM {
+  measure: ddm_and_loses {
     type: sum
+    label: "Perdidas y DDM"
     sql: CAST(${mermas_e} AS INT) ;;
   }
 }
