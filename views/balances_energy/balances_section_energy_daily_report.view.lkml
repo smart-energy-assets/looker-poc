@@ -74,7 +74,8 @@ SELECT
       ELSE 100
       END) AS rn
 FROM
-  measures UNPIVOT(value FOR dimension IN (`Existencias Iniciales`,
+  measures UNPIVOT(value FOR dimension IN (
+    `Existencias Iniciales`,
     `Existencias Finales`,
     `Delta de Existencias`,
     `Medida de Entrada`,
@@ -87,7 +88,7 @@ FROM
   }
 
   dimension: dimension {
-    label: "Agregados"
+    label: "Balance Físico"
     type: string
     order_by_field: rn
     sql: ${TABLE}.dimension ;;
@@ -95,7 +96,7 @@ FROM
 
   dimension: value {
     type: string
-    label: "Valores (kWh)"
+    label: "Energía (kWh)"
     value_format: "#,##0"
     sql: ${TABLE}.value ;;
   }
