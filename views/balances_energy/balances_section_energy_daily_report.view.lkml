@@ -2,63 +2,145 @@ view: balances_section_energy_daily_report {
   derived_table: {
     sql:
 WITH
-  measures AS (
+  deduplicated AS (
   WITH
-    balances_section_energy_daily_deduplicated AS (
-    WITH
-      temp_table AS (
-      SELECT
-        *,
-        ROW_NUMBER() OVER(PARTITION BY TS, section_name ORDER BY TS DESC) AS rn
-      FROM
-        `sea-produccion.target_reporting.balances_section_energy_daily`
-      WHERE
-        section_name = {% parameter infrastructure_parameter %}
-        AND TS >= {% date_start date_filter2 %}
-        AND TS <= {% date_end date_filter2 %}
-      ORDER BY
-        TS DESC )
+    temp_table AS (
     SELECT
-      * EXCEPT(rn)
+      *,
+      ROW_NUMBER() OVER(PARTITION BY TS, section_name ORDER BY TS DESC) AS rn
     FROM
-      temp_table
+      `sea-produccion.target_reporting.balances_section_energy_daily`
     WHERE
-      rn = 1 )
+      section_name = {% parameter infrastructure_parameter %}
+      AND TS >= TIMESTAMP_SUB({% date_start date_filter2 %}, INTERVAL 1 DAY)
+      AND TS <= {% date_end date_filter2 %}
+    ORDER BY
+      TS DESC)
   SELECT
-    COALESCE(SUM(CASE
-          WHEN ( (DATE(balances_section_energy_daily_deduplicated.TS )) = (DATE({% date_start date_filter2 %})) ) THEN CAST( balances_section_energy_daily_deduplicated.stock_E AS INT)
-        ELSE
-        NULL
-      END
-        ), 0) AS `Existencias Iniciales`,
-    COALESCE(SUM(CASE
-          WHEN ( (DATE(balances_section_energy_daily_deduplicated.TS )) = (DATE(IF({% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY), {% date_end date_filter2 %}) )) ) THEN CAST( balances_section_energy_daily_deduplicated.stock_E AS INT)
-        ELSE
-        NULL
-      END
-        ), 0) AS `Existencias Finales`,
-    COALESCE(SUM(CASE
-          WHEN ( (DATE(balances_section_energy_daily_deduplicated.TS )) = DATE({% date_start date_filter2 %}) ) THEN CAST( balances_section_energy_daily_deduplicated.stock_E AS INT)
-        ELSE
-        NULL
-      END
-        ), 0) - COALESCE(SUM(CASE
-          WHEN ( (DATE(balances_section_energy_daily_deduplicated.TS )) = (DATE(IF({% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY), {% date_end date_filter2 %}) )) ) THEN CAST( balances_section_energy_daily_deduplicated.stock_E AS INT)
-        ELSE
-        NULL
-      END
-        ), 0) AS `Delta de Existencias`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.totalizados_IN_E AS INT) ), 0) AS `Medida de Entrada`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.totalizados_OUT_E AS INT) ), 0) AS `Medida de Salida`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.totalizados_SELF_E AS INT) ), 0) AS `Medida de Gas de Operación`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.delta_E_total_fuelgas AS INT) ), 0) AS `Medida de Gas de Operación - EC`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.delta_E_total_cald AS INT) ), 0) AS `Medida de Gas de Operación - ERM`,
-    COALESCE(SUM(CAST( balances_section_energy_daily_deduplicated.mermas_E AS INT) ), 0) AS `Perdidas y DDM`
+    * EXCEPT(rn)
   FROM
-    balances_section_energy_daily_deduplicated )
+    temp_table
+  WHERE
+    rn = 1),
+
+  existencias AS (
+  SELECT
+    COALESCE(
+      SUM(
+        CASE
+          WHEN (
+            (DATE(deduplicated.TS))
+            = (DATE_SUB(DATE({% date_start date_filter2 %}), INTERVAL 1 DAY))
+          ) THEN CAST(deduplicated.stock_E AS INT)
+          ELSE
+            NULL
+        END
+      ), 0) AS `Existencias Iniciales`,
+    COALESCE(
+      SUM(
+        CASE
+          WHEN (
+            (DATE(deduplicated.TS))
+            = (DATE(IF(
+                {% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
+                TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY),
+                TIMESTAMP_SUB({% date_end date_filter2 %}, INTERVAL 1 DAY))))
+          ) THEN CAST(deduplicated.stock_E AS INT)
+          ELSE
+            NULL
+        END
+      ), 0) AS `Existencias Finales`,
+    COALESCE(
+      SUM(
+        CASE
+          WHEN (
+            (DATE(deduplicated.TS))
+            = (DATE_SUB(DATE({% date_start date_filter2 %}), INTERVAL 1 DAY))
+          ) THEN CAST(deduplicated.stock_E AS INT)
+          ELSE
+            NULL
+        END
+      ), 0)
+    - COALESCE(
+      SUM(
+        CASE
+          WHEN (
+            (DATE(deduplicated.TS))
+            = (DATE(IF(
+                {% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
+                TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY),
+                TIMESTAMP_SUB({% date_end date_filter2 %}, INTERVAL 1 DAY))))
+          ) THEN CAST(deduplicated.stock_E AS INT)
+          ELSE
+            NULL
+        END
+      ), 0) AS `Delta de Existencias`
+  FROM
+    deduplicated),
+
+  medidas AS (
+  SELECT
+    COALESCE(SUM(CAST(
+      deduplicated.totalizados_IN_E AS INT)
+    ), 0) AS `Medida de Entrada`,
+    COALESCE(SUM(CAST(
+      deduplicated.totalizados_OUT_E AS INT)
+    ), 0) AS `Medida de Salida`,
+    COALESCE(SUM(CAST(
+      deduplicated.totalizados_SELF_E AS INT)
+    ), 0) AS `Medida de Gas de Operación`,
+    COALESCE(SUM(CAST(
+      deduplicated.delta_E_total_fuelgas AS INT)
+    ), 0) AS `Medida de Gas de Operación - EC`,
+    COALESCE(SUM(CAST(
+      deduplicated.delta_E_total_cald AS INT)
+    ), 0) AS `Medida de Gas de Operación - ERM`,
+    COALESCE(SUM(CAST(
+      deduplicated.mermas_E AS INT)
+    ), 0) AS `Perdidas y DDM`
+  FROM
+    deduplicated
+  WHERE
+    TS >= {% date_start date_filter2 %}
+    AND TS <= {% date_end date_filter2 %}),
+
+  existencias_pivoted AS (
+  SELECT
+    dimension,
+    value
+  FROM
+    existencias UNPIVOT(value FOR dimension IN (
+      `Existencias Iniciales`,
+      `Existencias Finales`,
+      `Delta de Existencias`))),
+
+  medidas_pivoted AS (
+  SELECT
+    dimension,
+    value
+  FROM
+    medidas UNPIVOT(value FOR dimension IN (
+      `Medida de Entrada`,
+      `Medida de Salida`,
+      `Medida de Gas de Operación`,
+      `Medida de Gas de Operación - EC`,
+      `Medida de Gas de Operación - ERM`,
+      `Perdidas y DDM`))
+  ),
+
+  measures AS(
+  SELECT
+    *
+  FROM
+    existencias_pivoted
+  UNION ALL
+    SELECT
+      *
+    FROM medidas_pivoted
+  )
+
 SELECT
-  dimension,
-  value,
+  *,
   ROW_NUMBER() OVER(
     ORDER BY
       CASE
@@ -74,16 +156,7 @@ SELECT
       ELSE 100
       END) AS rn
 FROM
-  measures UNPIVOT(value FOR dimension IN (
-    `Existencias Iniciales`,
-    `Existencias Finales`,
-    `Delta de Existencias`,
-    `Medida de Entrada`,
-    `Medida de Salida`,
-    `Medida de Gas de Operación`,
-    `Medida de Gas de Operación - EC`,
-    `Medida de Gas de Operación - ERM`,
-    `Perdidas y DDM`))
+  measures
 ;;
   }
 
