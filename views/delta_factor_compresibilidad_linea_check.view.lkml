@@ -244,12 +244,6 @@ view: delta_factor_compresibilidad_linea_check {
     sql: AVG(${presion}) ;;
   }
 
-  measure: Dif_PCS {
-    type: number
-    sql:  ((AVG(${pcs_neptuno}) - AVG(${pcs_slm}))/AVG(${pcs_slm}))*100 ;;
-    label: "Diff. PCS"
-    value_format: "0.00"
-  }
 
   measure: avg_zneptuno {
     type: number
@@ -263,9 +257,46 @@ view: delta_factor_compresibilidad_linea_check {
 
   measure: Dif_Z {
     type: number
-    sql:  ((AVG(${z_neptuno}) - AVG(${z_slm}))/AVG(${z_slm}))*100 ;;
+    sql:  ((${avg_zneptuno} - ${avg_zslm})/${avg_zslm})*100 ;;
     label: "Diff. Z"
     value_format: "0.00"
+  }
+
+  measure: avg_pcsneptuno {
+    type: number
+    sql: AVG(${pcs_neptuno}) ;;
+  }
+
+  measure: avg_pcslm {
+    type: number
+    sql: AVG(${pcs_slm}) ;;
+  }
+
+  measure: Dif_PCS {
+    type: number
+    sql:  ((${avg_pcsneptuno} - ${avg_pcslm})/${avg_pcslm})*100 ;;
+    label: "Diff. PCS"
+    value_format: "0.00"
+  }
+
+  measure: avg_drneptuno {
+    type: number
+    sql: AVG(${dr_neptuno}) ;;
+  }
+
+  measure: avg_drslm {
+    type: number
+    sql: AVG(${dr_slm}) ;;
+  }
+
+  measure: avg_C02neptuno {
+    type: number
+    sql: AVG(${co2_neptuno}) ;;
+  }
+
+  measure: avg_CO2slm {
+    type: number
+    sql: AVG(${co2_slm}) ;;
   }
 
   measure: count {
