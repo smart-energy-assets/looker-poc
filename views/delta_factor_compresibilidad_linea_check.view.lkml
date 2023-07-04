@@ -136,7 +136,7 @@ view: delta_factor_compresibilidad_linea_check {
 
   dimension: presion {
     type: number
-    sql: ${TABLE}.presion WHERE ${TABLE}.presion >=0 AND ${TABLE}.presion <=80  ;;
+    sql: ${TABLE}.presion;;
 }
 
   dimension: q_max {
