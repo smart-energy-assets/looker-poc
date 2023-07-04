@@ -263,7 +263,7 @@ view: delta_factor_compresibilidad_linea_check {
 
   measure: Dif_Z {
     type: number
-    sql:  ((AVG(${suma_zneptuno}) - AVG(${suma_zslm}))/AVG(${suma_zslm}))*100 ;;
+    sql:  ((AVG(${z_neptuno}) - AVG(${z_slm}))/AVG(${z_slm}))*100 ;;
     label: "Diff. Z"
     value_format: "0.00"
   }
