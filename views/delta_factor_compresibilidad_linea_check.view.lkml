@@ -244,6 +244,20 @@ view: delta_factor_compresibilidad_linea_check {
     sql: AVG(${presion}) ;;
   }
 
+  measure: Dif_PCS {
+    type: number
+    sql:  ((AVG(${pcs_neptuno}) - AVG(${pcs_slm}))/AVG(${pcs_slm}))*100 ;;
+    label: "Diff. PCS"
+    value_format: "0.00"
+  }
+
+  measure: Dif_Z {
+    type: number
+    sql:  ((AVG(${z_neptuno}) - AVG(${z_slm}))/AVG(${z_slm}))*100 ;;
+    label: "Diff. Z"
+    value_format: "0.00"
+  }
+
   measure: count {
     type: count
     drill_fields: []
