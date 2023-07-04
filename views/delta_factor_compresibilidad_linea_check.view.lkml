@@ -251,14 +251,14 @@ view: delta_factor_compresibilidad_linea_check {
     value_format: "0.00"
   }
 
-  measure: suma_zneptuno {
-    type: sum
-    sql: ${z_neptuno} ;;
+  measure: avg_zneptuno {
+    type: number
+    sql: AVG(${z_neptuno}) ;;
   }
 
-  measure: suma_zslm {
-    type: sum
-    sql: ${z_slm} ;;
+  measure: avg_zslm {
+    type: number
+    sql: AVG(${z_slm}) ;;
   }
 
   measure: Dif_Z {
