@@ -8,7 +8,7 @@ view: balances_section_energy_daily_deduplicated {
         FROM
           `sea-produccion.target_reporting.balances_section_energy_daily`
         WHERE
-          section_name IN ("TR_SAG", "RT_ENA", "RT_ETN")
+          section_name = {% parameter infrastructure_parameter %}
           AND TS >= {% date_start date_filter %}
           AND TS <= {% date_end date_filter %}
         ORDER BY
@@ -16,13 +16,13 @@ view: balances_section_energy_daily_deduplicated {
       )
 
       SELECT
-        *
-        EXCEPT(rn)
+      *
+      EXCEPT(rn)
       FROM
-        temp_table
+      temp_table
       WHERE
-        rn = 1
-    ;;
+      rn = 1
+      ;;
   }
 
   dimension_group: ts {
@@ -174,6 +174,23 @@ view: balances_section_energy_daily_deduplicated {
   # FILTERS ADDED
   filter: date_filter {
     type: date
+    description: "Filtro temporal de uso obligatotio, se aplica a todos los resultados que devuelve la tabla."
+  }
+
+  parameter: infrastructure_parameter {
+    type:  string
+    allowed_value: {
+      label: "TR_SAG"
+      value: "TR_SAG"
+    }
+    allowed_value: {
+      label: "RT_ENA"
+      value: "RT_ENA"
+    }
+    allowed_value: {
+      label: "RT_ETN"
+      value: "RT_ETN"
+    }
   }
 
   dimension: filter_start {
@@ -205,25 +222,71 @@ view: balances_section_energy_daily_deduplicated {
 
 
   # MEASURES ADDED
-  measure: existencias_iniciales {
+  measure: initial_stock {
     type: sum
-    sql: ${stock_e} ;;
+    label: "Existencias Iniciales"
+    sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
+    description: "Existencias en kWh registrados el primer dia del filtro temporal."
+    value_format_name: energy_formatting
   }
 
-  measure: existencias_finales {
+  measure: end_stock {
     type: sum
-    sql: ${stock_e} ;;
+    label: "Existencias Finales"
+    sql: CAST(${stock_e} AS INT) ;;
     filters: [is_end: "Yes"]
+    value_format_name: energy_formatting
   }
 
-  measure: medida_de_entrada {
+  measure: stock_delta {
+    type: number
+    label: "Delta de Existencias"
+    sql: ${initial_stock} - ${end_stock} ;;
+    value_format_name: energy_formatting
+  }
+
+  measure: input_measure {
     type: sum
-    sql: ${totalizados_in_e} ;;
+    label: "Medida de Entrada"
+    sql: CAST(${totalizados_in_e} AS INT) ;;
+    value_format_name: energy_formatting
   }
 
-  measure: medida_de_salida {
+  measure: output_measure {
     type:  sum
-    sql: ${totalizados_out_e} ;;
+    label: "Medida de Salida"
+    sql: CAST(${totalizados_out_e} AS INT) ;;
+    value_format_name: energy_formatting
+
+  }
+
+  measure: operational_gas_measure {
+    type: sum
+    label: "Medida de Gas de Operación"
+    sql: CAST(${totalizados_self_e} AS INT) ;;
+    value_format_name: energy_formatting
+    # drill_fields: [ec, erm]
+  }
+
+  measure: ec {
+    type: sum
+    label: "Medida de Gas de Operación - EC"
+    sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
+    value_format_name: energy_formatting
+  }
+
+  measure: erm {
+    type: sum
+    label: "Medida de Gas de Operación - ERM"
+    sql: CAST(${delta_e_total_cald} AS INT) ;;
+    value_format_name: energy_formatting
+  }
+
+  measure: ddm_and_loses {
+    type: sum
+    label: "Perdidas y DDM"
+    sql: CAST(${mermas_e} AS INT) ;;
+    value_format_name: energy_formatting
   }
 }

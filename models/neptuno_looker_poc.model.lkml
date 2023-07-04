@@ -149,4 +149,17 @@ explore: arima_prediction_union {}
 # Proyecto DLC: Automatización de balances
 explore: balances_section_energy_daily {}
 
-explore: balances_section_energy_daily_deduplicated {}
+explore: balances_section_energy_daily_deduplicated {
+  always_filter: {
+    filters: [balances_section_energy_daily_deduplicated.date_filter: "this month"]
+  }
+}
+
+explore: balances_section_energy_daily_report {}
+
+explore: balances_energy_open_closed {}
+
+named_value_format: energy_formatting {
+  value_format: "#,##0\" kWh\""
+  strict_value_format: yes
+}
