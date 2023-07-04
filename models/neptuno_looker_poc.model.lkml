@@ -146,6 +146,7 @@ explore: entradas {
 # BQML ARIMA_PLUS
 explore: arima_prediction_union {}
 
+
 # Proyecto DLC: Automatización de balances
 explore: balances_section_energy_daily {}
 
