@@ -8,7 +8,7 @@ view: balances_section_energy_daily_deduplicated {
         FROM
           `sea-produccion.target_reporting.balances_section_energy_daily`
         WHERE
-          section_name = {% parameter infrastructure_parameter %}
+          section_name IN ("TR_SAG", "RT_ENA", "RT_ETN")
           AND TS >= {% date_start date_filter %}
           AND TS <= {% date_end date_filter %}
         ORDER BY
@@ -271,14 +271,14 @@ view: balances_section_energy_daily_deduplicated {
 
   measure: ec {
     type: sum
-    label: "Medida de Gas de Operación - EC"
+    label: "----- EC"
     sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
     value_format_name: energy_formatting
   }
 
   measure: erm {
     type: sum
-    label: "Medida de Gas de Operación - ERM"
+    label: "----- ERM"
     sql: CAST(${delta_e_total_cald} AS INT) ;;
     value_format_name: energy_formatting
   }
