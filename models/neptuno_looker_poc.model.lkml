@@ -166,3 +166,5 @@ named_value_format: energy_formatting {
 }
 
 explore: arima_prediccion {}
+
+explore: union {}
