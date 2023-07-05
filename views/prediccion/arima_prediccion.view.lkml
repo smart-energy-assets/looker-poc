@@ -11,6 +11,8 @@ view: arima_prediccion {
     sql: ${TABLE}.forecast_timestamp ;;
   }
 
+  dimension: um {}
+
   dimension: forecast_value {
     type: number
     value_format_name: decimal_2
