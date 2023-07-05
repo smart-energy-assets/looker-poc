@@ -2,7 +2,6 @@ view: datos {
   derived_table: {
     explore_source: delta_factor_compresibilidad_linea_check {
       column: fecha_lectura_month {}
-      column: energia_GWh {}
       column: diferencia_de_energia_GWh {}
       filters: {
         field: delta_factor_compresibilidad_linea_check.um
