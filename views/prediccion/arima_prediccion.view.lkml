@@ -36,4 +36,9 @@ view: arima_prediccion {
     value_format_name: decimal_2
   }
 
+  measure: prediccion {
+    type: sum
+    sql:  ${forecast_value} ;;
+    value_format_name: decimal_2
+  }
 }
