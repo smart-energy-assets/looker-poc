@@ -3,7 +3,7 @@ include: "arima_prediccion.view"
 view: union {
   label: "ARIMA Model Prediccion"
   derived_table: {
-    sql: SELECT TIMESTAMP(fecha_lectura_month) AS fecha, diferencia_de_energia_GWh, NULL AS forecast_value, NULL AS standard_error, NULL AS confidence_level, NULL AS prediction_interval_lower_bound, NULL AS prediction_interval_upper_bound, false AS is_forecast
+    sql: SELECT TIMESTAMP(fecha_lectura_month) AS fecha, diferencia_de_energia_GWh, um, NULL AS forecast_value, NULL AS standard_error, NULL AS confidence_level, NULL AS prediction_interval_lower_bound, NULL AS prediction_interval_upper_bound, false AS is_forecast
       FROM ${datos.SQL_TABLE_NAME}
       UNION ALL
       SELECT forecast_timestamp, forecast_value, forecast_value, standard_error, confidence_level, prediction_interval_lower_bound, prediction_interval_upper_bound, true AS is_forecast
@@ -19,6 +19,8 @@ view: union {
   dimension_group: forecast {
     hidden: yes
   }
+
+  dimension: um {}
 
   dimension_group: fecha {
     type: time
