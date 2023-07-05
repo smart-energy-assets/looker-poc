@@ -1,69 +1,39 @@
 view: arima_prediccion {
-  # # You can specify the table name if it's different from the view name:
-  # sql_table_name: my_schema_name.tester ;;
-  #
-  # # Define your dimensions and measures here, like this:
-  # dimension: user_id {
-  #   description: "Unique ID for each user that has ordered"
-  #   type: number
-  #   sql: ${TABLE}.user_id ;;
-  # }
-  #
-  # dimension: lifetime_orders {
-  #   description: "The total number of orders for each user"
-  #   type: number
-  #   sql: ${TABLE}.lifetime_orders ;;
-  # }
-  #
-  # dimension_group: most_recent_purchase {
-  #   description: "The date when each user last ordered"
-  #   type: time
-  #   timeframes: [date, week, month, year]
-  #   sql: ${TABLE}.most_recent_purchase_at ;;
-  # }
-  #
-  # measure: total_lifetime_orders {
-  #   description: "Use this for counting lifetime orders across many users"
-  #   type: sum
-  #   sql: ${lifetime_orders} ;;
-  # }
-}
+  derived_table: {
+    sql: SELECT * FROM ML.FORECAST(
+      MODEL ${arima.SQL_TABLE_NAME},
+      STRUCT(5 AS horizon, 0.95 AS confidence_level)) ;;
+  }
 
-# view: arima_prediccion {
-#   # Or, you could make this view a derived table, like this:
-#   derived_table: {
-#     sql: SELECT
-#         user_id as user_id
-#         , COUNT(*) as lifetime_orders
-#         , MAX(orders.created_at) as most_recent_purchase_at
-#       FROM orders
-#       GROUP BY user_id
-#       ;;
-#   }
-#
-#   # Define your dimensions and measures here, like this:
-#   dimension: user_id {
-#     description: "Unique ID for each user that has ordered"
-#     type: number
-#     sql: ${TABLE}.user_id ;;
-#   }
-#
-#   dimension: lifetime_orders {
-#     description: "The total number of orders for each user"
-#     type: number
-#     sql: ${TABLE}.lifetime_orders ;;
-#   }
-#
-#   dimension_group: most_recent_purchase {
-#     description: "The date when each user last ordered"
-#     type: time
-#     timeframes: [date, week, month, year]
-#     sql: ${TABLE}.most_recent_purchase_at ;;
-#   }
-#
-#   measure: total_lifetime_orders {
-#     description: "Use this for counting lifetime orders across many users"
-#     type: sum
-#     sql: ${lifetime_orders} ;;
-#   }
-# }
+  dimension_group: forecast {
+    type: time
+    timeframes: [raw, date, day_of_year, week, week_of_year, month, month_name, quarter, year]
+    sql: ${TABLE}.forecast_timestamp ;;
+  }
+
+  dimension: forecast_value {
+    type: number
+    value_format_name: decimal_2
+  }
+
+  dimension: standard_error {
+    type: number
+    value_format_name: decimal_2
+  }
+
+  dimension: confidence_level {
+    type: number
+    value_format_name: percent_1
+  }
+
+  dimension: prediction_interval_lower_bound {
+    type: number
+    value_format_name: decimal_2
+  }
+
+  dimension: prediction_interval_upper_bound {
+    type: number
+    value_format_name: decimal_2
+  }
+
+}
