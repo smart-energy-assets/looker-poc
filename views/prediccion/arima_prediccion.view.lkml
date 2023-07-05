@@ -2,7 +2,7 @@ view: arima_prediccion {
   derived_table: {
     sql: SELECT * FROM ML.FORECAST(
       MODEL ${arima.SQL_TABLE_NAME},
-      STRUCT(5 AS horizon, 0.95 AS confidence_level)) ;;
+      STRUCT(15 AS horizon, 0.95 AS confidence_level)) ;;
   }
 
   dimension_group: forecast {
