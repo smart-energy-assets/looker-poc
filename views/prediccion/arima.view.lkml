@@ -13,6 +13,6 @@ view: arima {
         ) AS
       SELECT
          *
-      FROM ${input_datos.SQL_TABLE_NAME};;
+      FROM ${datos.SQL_TABLE_NAME};;
   }
 }
