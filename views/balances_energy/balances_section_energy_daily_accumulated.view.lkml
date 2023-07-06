@@ -1,4 +1,4 @@
-view: balances_section_energy_daily_report {
+view: balances_section_energy_daily_accumulated {
   derived_table: {
     sql:
 WITH
@@ -13,8 +13,8 @@ WITH
       WHEN {% parameter infrastructure_type%} = "RT"
         THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
     END
-    AND TS >= TIMESTAMP_SUB({% date_start date_filter2 %}, INTERVAL 1 DAY)
-    AND TS <= {% date_end date_filter2 %}),
+    AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
+    AND TS <= {% date_end date_filter %}),
 
   deduplicated AS (
   SELECT
@@ -31,7 +31,7 @@ WITH
         CASE
           WHEN (
             (DATE(deduplicated.TS))
-            = (DATE_SUB(DATE({% date_start date_filter2 %}), INTERVAL 1 DAY))
+            = (DATE_SUB(DATE({% date_start date_filter %}), INTERVAL 1 DAY))
           ) THEN CAST(deduplicated.stock_E AS INT)
           ELSE
             NULL
@@ -43,9 +43,9 @@ WITH
           WHEN (
             (DATE(deduplicated.TS))
             = (DATE(IF(
-                {% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
+                {% date_end date_filter %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
                 TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY),
-                TIMESTAMP_SUB({% date_end date_filter2 %}, INTERVAL 1 DAY))))
+                TIMESTAMP_SUB({% date_end date_filter %}, INTERVAL 1 DAY))))
           ) THEN CAST(deduplicated.stock_E AS INT)
           ELSE
             NULL
@@ -56,7 +56,7 @@ WITH
         CASE
           WHEN (
             (DATE(deduplicated.TS))
-            = (DATE_SUB(DATE({% date_start date_filter2 %}), INTERVAL 1 DAY))
+            = (DATE_SUB(DATE({% date_start date_filter %}), INTERVAL 1 DAY))
           ) THEN CAST(deduplicated.stock_E AS INT)
           ELSE
             NULL
@@ -68,9 +68,9 @@ WITH
           WHEN (
             (DATE(deduplicated.TS))
             = (DATE(IF(
-                {% date_end date_filter2 %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
+                {% date_end date_filter %} >= TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'),
                 TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY, 'UTC'), INTERVAL 1 DAY),
-                TIMESTAMP_SUB({% date_end date_filter2 %}, INTERVAL 1 DAY))))
+                TIMESTAMP_SUB({% date_end date_filter %}, INTERVAL 1 DAY))))
           ) THEN CAST(deduplicated.stock_E AS INT)
           ELSE
             NULL
@@ -100,8 +100,8 @@ WITH
   FROM
     deduplicated
   WHERE
-    TS >= {% date_start date_filter2 %}
-    AND TS <= {% date_end date_filter2 %}
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
   GROUP BY
     section_name),
 
@@ -117,8 +117,8 @@ WITH
   FROM
     deduplicated
   WHERE
-    TS >= {% date_start date_filter2 %}
-    AND TS <= {% date_end date_filter2 %}
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
   GROUP BY
     section_name),
 
@@ -230,7 +230,7 @@ FROM
     sql: ${TABLE}.section_name ;;
   }
 
-  filter: date_filter2 {
+  filter: date_filter {
     type: date
   }
 
