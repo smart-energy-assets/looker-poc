@@ -139,7 +139,6 @@ explore: entradas {
     relationship: one_to_one
     type: left_outer
   }
-
 }
 
 
@@ -158,9 +157,6 @@ explore: balances_section_energy_daily_deduplicated {
 
 explore: balances_section_energy_daily_report {}
 
-explore: balances_energy_open_closed {}
+explore: balances_section_energy_daily_not_accumulated {}
 
-named_value_format: energy_formatting {
-  value_format: "#,##0\" kWh\""
-  strict_value_format: yes
-}
+explore: balances_energy_open_closed {}

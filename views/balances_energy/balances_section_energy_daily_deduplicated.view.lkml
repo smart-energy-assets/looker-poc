@@ -228,7 +228,6 @@ view: balances_section_energy_daily_deduplicated {
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_start: "Yes"]
     description: "Existencias en kWh registrados el primer dia del filtro temporal."
-    value_format_name: energy_formatting
   }
 
   measure: end_stock {
@@ -236,28 +235,24 @@ view: balances_section_energy_daily_deduplicated {
     label: "Existencias Finales"
     sql: CAST(${stock_e} AS INT) ;;
     filters: [is_end: "Yes"]
-    value_format_name: energy_formatting
   }
 
   measure: stock_delta {
     type: number
     label: "Delta de Existencias"
     sql: ${initial_stock} - ${end_stock} ;;
-    value_format_name: energy_formatting
   }
 
   measure: input_measure {
     type: sum
     label: "Medida de Entrada"
     sql: CAST(${totalizados_in_e} AS INT) ;;
-    value_format_name: energy_formatting
   }
 
   measure: output_measure {
     type:  sum
     label: "Medida de Salida"
     sql: CAST(${totalizados_out_e} AS INT) ;;
-    value_format_name: energy_formatting
 
   }
 
@@ -265,7 +260,6 @@ view: balances_section_energy_daily_deduplicated {
     type: sum
     label: "Medida de Gas de Operación"
     sql: CAST(${totalizados_self_e} AS INT) ;;
-    value_format_name: energy_formatting
     # drill_fields: [ec, erm]
   }
 
@@ -273,20 +267,17 @@ view: balances_section_energy_daily_deduplicated {
     type: sum
     label: "----- EC"
     sql: CAST(${delta_e_total_fuelgas} AS INT) ;;
-    value_format_name: energy_formatting
   }
 
   measure: erm {
     type: sum
     label: "----- ERM"
     sql: CAST(${delta_e_total_cald} AS INT) ;;
-    value_format_name: energy_formatting
   }
 
   measure: ddm_and_loses {
     type: sum
     label: "Perdidas y DDM"
     sql: CAST(${mermas_e} AS INT) ;;
-    value_format_name: energy_formatting
   }
 }

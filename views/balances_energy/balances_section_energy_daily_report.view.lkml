@@ -14,9 +14,7 @@ WITH
         THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
     END
     AND TS >= TIMESTAMP_SUB({% date_start date_filter2 %}, INTERVAL 1 DAY)
-    AND TS <= {% date_end date_filter2 %}
-  ORDER BY
-    TS DESC),
+    AND TS <= {% date_end date_filter2 %}),
 
   deduplicated AS (
   SELECT
@@ -216,8 +214,7 @@ FROM
 
   dimension: value {
     type: number
-    label: "Energía (kWh)"
-    value_format: "#,##0"
+    label: "Energía [kWh]"
     order_by_field: rn
     sql: ${TABLE}.value ;;
   }
@@ -253,19 +250,31 @@ FROM
     }
   }
 
-  parameter: infrastructure_parameter {
-    type:  string
+  parameter: acumulado {
+    type: yesno
     allowed_value: {
-      label: "TR_SAG"
-      value: "TR_SAG"
+      label: "Acumulado"
+      value: "Yes"
+    }
+  }
+
+  parameter: tipo_balance {
+    type: string
+    allowed_value: {
+      label: "Prebalance"
+      value: "prebalance"
     }
     allowed_value: {
-      label: "RT_ENA"
-      value: "RT_ENA"
+      label: "Diario Provisional"
+      value: "diario_provisional"
     }
     allowed_value: {
-      label: "RT_ETN"
-      value: "RT_ETN"
+      label: "Final Provisional"
+      value: "final_provisional"
+    }
+    allowed_value: {
+      label: "Final Definitivo"
+      value: "final_definitivo"
     }
   }
 }
