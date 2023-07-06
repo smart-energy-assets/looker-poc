@@ -136,8 +136,8 @@ view: delta_factor_compresibilidad_linea_check {
 
   dimension: presion {
     type: number
-    sql: ${TABLE}.presion ;;
-  }
+    sql: ${TABLE}.presion;;
+}
 
   dimension: q_max {
     type: number
@@ -294,7 +294,7 @@ view: delta_factor_compresibilidad_linea_check {
     type: number
     sql: AVG(${dr_slm}) ;;
     value_format: "0.00"
-  }
+}
 
   measure: avg_C02neptuno {
     type: number
