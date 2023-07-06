@@ -10,7 +10,7 @@ WITH
     `sea-produccion.target_reporting.balances_section_energy_daily`
   WHERE
     CASE
-      WHEN {% parameter infrastructure_type%} = "RT"
+      WHEN {% parameter infrastructure_type%} = "Red de Transporte"
         THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
     END
     AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
@@ -192,7 +192,11 @@ SELECT
             ELSE 100
           END
         ELSE 100
-      END) AS rn
+      END) AS rn,
+  CONCAT(CAST(FORMAT_DATE("%x", DATE({% date_start date_filter%})) AS STRING),
+    " - ", CAST(FORMAT_DATE("%x", DATE({% date_end date_filter%})) AS STRING)) AS date_range,
+  CONCAT({% parameter infrastructure_type%}, " - ", section_name) AS infrastructure
+
 FROM
   measures
 ;;
@@ -230,6 +234,18 @@ FROM
     sql: ${TABLE}.section_name ;;
   }
 
+  dimension: date_range {
+    type: string
+    label: "Rango de Fechas"
+    sql: ${TABLE}.date_range ;;
+  }
+
+  dimension: infrastructure {
+    type: string
+    label: "Infraestructura"
+    sql: ${TABLE}.infrastructure ;;
+  }
+
   filter: date_filter {
     type: date
   }
@@ -238,7 +254,7 @@ FROM
     type: string
     allowed_value: {
       label: "Red de Transporte"
-      value: "RT"
+      value: "Red de Transporte"
     }
     allowed_value: {
       label: "Plantas"
