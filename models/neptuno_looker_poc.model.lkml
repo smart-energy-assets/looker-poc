@@ -167,3 +167,5 @@ named_value_format: energy_formatting {
   value_format: "#,##0\" kWh\""
   strict_value_format: yes
 }
+
+explore: test {}

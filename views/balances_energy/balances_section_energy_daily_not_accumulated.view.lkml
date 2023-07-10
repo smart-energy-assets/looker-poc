@@ -85,7 +85,7 @@ WITH
     section_name,
     TS
   FROM
-    existencias UNPIVOT(value FOR dimension IN ( `Existencias Iniciales`,
+    existencias UNPIVOT(value FOR dimension IN (`Existencias Iniciales`,
         `Existencias Finales`,
         `Delta de Existencias`))),
 
@@ -97,7 +97,7 @@ WITH
     section_name,
     TS
   FROM
-    medidas UNPIVOT(value FOR dimension IN ( `Medida de Entrada`,
+    medidas UNPIVOT(value FOR dimension IN (`Medida de Entrada`,
         `Medida de Salida`,
         `Medida de Gas de Operación`,
         `Perdidas y DDM`))),
@@ -110,7 +110,7 @@ WITH
     section_name,
     TS
   FROM
-    medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN ( `EC`,
+    medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN (`EC`,
         `ERM`))),
 
   measures AS (
@@ -247,14 +247,6 @@ FROM
     allowed_value: {
       label: "AASS"
       value: "AASS"
-    }
-  }
-
-  parameter: acumulado {
-    type: yesno
-    allowed_value: {
-      label: "Acumulado"
-      value: "Yes"
     }
   }
 

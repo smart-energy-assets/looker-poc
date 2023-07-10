@@ -5,7 +5,7 @@ WITH
   temp_table AS (
   SELECT
     *,
-    ROW_NUMBER() OVER(PARTITION BY TS, section_name ORDER BY TS DESC) AS rn
+    ROW_NUMBER() OVER(PARTITION BY TS, section_name, measurementunit_id ORDER BY TS DESC) AS rn
   FROM
     `sea-produccion.target_reporting.balances_section_energy_daily`
   WHERE
@@ -14,7 +14,7 @@ WITH
         THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
     END
     AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
-    AND TS <= {% date_end date_filter %}),
+    AND TS < {% date_end date_filter %}),
 
   deduplicated AS (
   SELECT
@@ -28,6 +28,7 @@ WITH
   SELECT
     COALESCE(
       SUM(
+        DISTINCT
         CASE
           WHEN (
             (DATE(deduplicated.TS))
@@ -39,6 +40,7 @@ WITH
       ), 0) AS `Existencias Iniciales`,
     COALESCE(
       SUM(
+        DISTINCT
         CASE
           WHEN (
             (DATE(deduplicated.TS))
@@ -53,6 +55,7 @@ WITH
       ), 0) AS `Existencias Finales`,
     COALESCE(
       SUM(
+        DISTINCT
         CASE
           WHEN (
             (DATE(deduplicated.TS))
@@ -61,9 +64,9 @@ WITH
           ELSE
             NULL
         END
-      ), 0)
-    - COALESCE(
+      ), 0) - COALESCE(
       SUM(
+        DISTINCT
         CASE
           WHEN (
             (DATE(deduplicated.TS))
@@ -85,15 +88,15 @@ WITH
   medidas AS (
   SELECT
     COALESCE(SUM(CAST(
-      deduplicated.totalizados_IN_E AS INT)
+      IF(role = "IN", delta_E, 0) AS INT)
     ), 0) AS `Medida de Entrada`,
     COALESCE(SUM(CAST(
-      deduplicated.totalizados_OUT_E AS INT)
+      IF(role = "OUT", delta_E, 0) AS INT)
     ), 0) AS `Medida de Salida`,
     COALESCE(SUM(CAST(
       deduplicated.totalizados_SELF_E AS INT)
     ), 0) AS `Medida de Gas de Operación`,
-    COALESCE(SUM(CAST(
+    COALESCE(SUM(DISTINCT CAST(
       deduplicated.mermas_E AS INT)
     ), 0) AS `Perdidas y DDM`,
     section_name,
@@ -194,7 +197,8 @@ SELECT
         ELSE 100
       END) AS rn,
   CONCAT(CAST(FORMAT_DATE("%x", DATE({% date_start date_filter%})) AS STRING),
-    " - ", CAST(FORMAT_DATE("%x", DATE({% date_end date_filter%})) AS STRING)) AS date_range,
+    " - ",
+    CAST(FORMAT_DATE("%x", DATE_SUB(DATE({% date_end date_filter%}), INTERVAL 1 DAY)) AS STRING)) AS date_range,
   CONCAT({% parameter infrastructure_type%}, " - ", section_name) AS infrastructure
 
 FROM
