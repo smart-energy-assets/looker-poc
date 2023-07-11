@@ -2,12 +2,13 @@ view: balances_section_energy_daily_accumulated {
   derived_table: {
     sql:
 WITH
-  temp_table AS (
+  connection_point AS (
   SELECT
-    *,
-    ROW_NUMBER() OVER(PARTITION BY TS, section_name, measurementunit_id ORDER BY TS DESC) AS rn
+    *
   FROM
-    `sea-produccion.target_reporting.balances_section_energy_daily`
+    `sea-produccion.target_reporting.balances_section_energy_daily` AS energy
+    JOIN `sea-produccion.target_reporting.looker_connection_point` AS connection_point
+      ON energy.measurementunit_id = measurementUnitId
   WHERE
     CASE
       WHEN {% parameter infrastructure_type%} = "Red de Transporte"
@@ -15,6 +16,13 @@ WITH
     END
     AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
     AND TS < {% date_end date_filter %}),
+
+  temp_table AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER(PARTITION BY TS, section_name, measurementunit_id ORDER BY TS DESC) AS rn
+  FROM
+    connection_point),
 
   deduplicated AS (
   SELECT
@@ -100,13 +108,15 @@ WITH
       deduplicated.mermas_E AS INT)
     ), 0) AS `Perdidas y DDM`,
     section_name,
+    '' AS role
   FROM
     deduplicated
   WHERE
     TS >= {% date_start date_filter %}
     AND TS <= {% date_end date_filter %}
   GROUP BY
-    section_name),
+    section_name,
+    role),
 
   medida_de_gas_de_operacion AS (
   SELECT
@@ -117,20 +127,61 @@ WITH
       deduplicated.delta_E_total_cald AS INT)
     ), 0) AS `ERM`,
     section_name,
+    '' AS role
   FROM
     deduplicated
   WHERE
     TS >= {% date_start date_filter %}
     AND TS <= {% date_end date_filter %}
   GROUP BY
-    section_name),
+    section_name,
+    role),
+
+  medidas_de_entrada AS (
+  SELECT
+    '' AS dimension,
+    name AS subtotal,
+    COALESCE(SUM(CAST(delta_E AS INT)), 0) AS value,
+    section_name,
+    role
+  FROM
+    deduplicated
+  WHERE
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
+    AND role = 'IN'
+  GROUP BY
+    dimension,
+    subtotal,
+    section_name,
+    role),
+
+  medidas_de_salida AS (
+  SELECT
+    '' AS dimension,
+    name AS subtotal,
+    COALESCE(SUM(CAST(delta_E AS INT)), 0) AS value,
+    section_name,
+    role
+  FROM
+    deduplicated
+  WHERE
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
+    AND role = 'OUT'
+  GROUP BY
+    dimension,
+    subtotal,
+    section_name,
+    role),
 
   existencias_pivoted AS (
   SELECT
     dimension,
-    "" AS subtotal,
+    '' AS subtotal,
     value,
-    section_name
+    section_name,
+    '' AS role
   FROM
     existencias UNPIVOT(value FOR dimension IN (
       `Existencias Iniciales`,
@@ -140,9 +191,10 @@ WITH
   medidas_pivoted AS (
   SELECT
     dimension,
-    "" AS subtotal,
+    '' AS subtotal,
     value,
-    section_name
+    section_name,
+    '' AS role
   FROM
     medidas UNPIVOT(value FOR dimension IN (
       `Medida de Entrada`,
@@ -151,12 +203,13 @@ WITH
       `Perdidas y DDM`))),
 
   medida_de_gas_de_operacion_pivoted AS (
-    SELECT
-      '' AS dimension,
-      subtotal,
-      value,
-      section_name
-    FROM
+  SELECT
+    '' AS dimension,
+    subtotal,
+    value,
+    section_name,
+    'SELF' AS role
+  FROM
     medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN (
       `EC`,
       `ERM`))),
@@ -174,7 +227,17 @@ WITH
     SELECT
       *
     FROM
-      medida_de_gas_de_operacion_pivoted)
+      medida_de_gas_de_operacion_pivoted
+  UNION ALL
+    SELECT
+      *
+    FROM
+      medidas_de_entrada
+  UNION ALL
+    SELECT
+      *
+    FROM
+      medidas_de_salida)
 
 SELECT
   *,
@@ -185,25 +248,20 @@ SELECT
         WHEN dimension = 'Existencias Finales' THEN 2
         WHEN dimension = 'Delta de Existencias' THEN 3
         WHEN dimension = 'Medida de Entrada' THEN 4
-        WHEN dimension = 'Medida de Salida' THEN 5
-        WHEN dimension = 'Medida de Gas de Operación' THEN 6
-        WHEN dimension = 'Perdidas y DDM' THEN 9
-        WHEN dimension = '' THEN
-          CASE
-            WHEN subtotal = 'EC' THEN 7
-            WHEN subtotal = 'ERM' THEN 8
-            ELSE 100
-          END
+        WHEN role = 'IN' THEN 5
+        WHEN dimension = 'Medida de Salida' THEN 6
+        WHEN role = 'OUT' THEN 7
+        WHEN dimension = 'Medida de Gas de Operación' THEN 8
+        WHEN role = 'SELF' THEN 9
+        WHEN dimension = 'Perdidas y DDM' THEN 10
         ELSE 100
       END) AS rn,
   CONCAT(CAST(FORMAT_DATE("%x", DATE({% date_start date_filter%})) AS STRING),
     " - ",
     CAST(FORMAT_DATE("%x", DATE_SUB(DATE({% date_end date_filter%}), INTERVAL 1 DAY)) AS STRING)) AS date_range,
   CONCAT({% parameter infrastructure_type%}, " - ", section_name) AS infrastructure
-
 FROM
-  measures
-;;
+  measures ;;
   }
 
   dimension: dimension {

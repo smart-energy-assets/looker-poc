@@ -2,6 +2,7 @@ view: balances_section_energy_daily_not_accumulated {
   derived_table: {
     sql:
 WITH
+  -- filter by temporal range and infrastructure type, do previous step to deduplicate rows
   temp_table AS (
   SELECT
     *,
@@ -16,6 +17,7 @@ WITH
     AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
     AND TS <= {% date_end date_filter %}),
 
+  -- deduplicate rows
   deduplicated AS (
   SELECT
     * EXCEPT(rn)
@@ -24,6 +26,7 @@ WITH
   WHERE
     rn = 1),
 
+  -- compute the initial and final stock
   existencias AS (
   SELECT
       a.stock_E AS `Existencias Iniciales`,
@@ -37,6 +40,7 @@ WITH
       ON a.TS = TIMESTAMP_SUB(b.TS, INTERVAL 1 DAY)
       AND a.section_name = b.section_name),
 
+  -- compute measures
   medidas AS (
   SELECT
     COALESCE(SUM(CAST(
@@ -62,6 +66,7 @@ WITH
     section_name,
     TS),
 
+  -- compute energy for role SELF
   medida_de_gas_de_operacion AS (
   SELECT
     COALESCE(SUM(CAST( deduplicated.delta_E_total_fuelgas AS INT) ), 0) AS `EC`,
@@ -98,9 +103,9 @@ WITH
     TS
   FROM
     medidas UNPIVOT(value FOR dimension IN (`Medida de Entrada`,
-        `Medida de Salida`,
-        `Medida de Gas de Operación`,
-        `Perdidas y DDM`))),
+      `Medida de Salida`,
+      `Medida de Gas de Operación`,
+      `Perdidas y DDM`))),
 
   medida_de_gas_de_operacion_pivoted AS (
   SELECT
@@ -111,7 +116,7 @@ WITH
     TS
   FROM
     medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN (`EC`,
-        `ERM`))),
+      `ERM`))),
 
   measures AS (
   SELECT
