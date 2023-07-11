@@ -239,21 +239,23 @@ WITH
     FROM
       medidas_de_salida)
 
+{% assign counter = 0 %}
+
 SELECT
   *,
   ROW_NUMBER() OVER(
     ORDER BY
       CASE
-        WHEN dimension = 'Existencias Iniciales' THEN 1
-        WHEN dimension = 'Existencias Finales' THEN 2
-        WHEN dimension = 'Delta de Existencias' THEN 3
-        WHEN dimension = 'Medida de Entrada' THEN 4
-        WHEN role = 'IN' THEN 5
-        WHEN dimension = 'Medida de Salida' THEN 6
-        WHEN role = 'OUT' THEN 7
-        WHEN dimension = 'Medida de Gas de Operación' THEN 8
-        WHEN role = 'SELF' THEN 9
-        WHEN dimension = 'Perdidas y DDM' THEN 10
+        WHEN dimension = 'Existencias Iniciales' THEN {% increment counter %}
+        WHEN dimension = 'Existencias Finales' THEN {% increment counter %}
+        WHEN dimension = 'Delta de Existencias' THEN {% increment counter %}
+        WHEN dimension = 'Medida de Entrada' THEN {% increment counter %}
+        WHEN role = 'IN' THEN {% increment counter %}
+        WHEN dimension = 'Medida de Salida' THEN {% increment counter %}
+        WHEN role = 'OUT' THEN {% increment counter %}
+        WHEN dimension = 'Medida de Gas de Operación' THEN {% increment counter %}
+        WHEN role = 'SELF' THEN {% increment counter %}
+        WHEN dimension = 'Perdidas y DDM' THEN {% increment counter %}
         ELSE 100
       END) AS rn,
   CONCAT(CAST(FORMAT_DATE("%x", DATE({% date_start date_filter%})) AS STRING),
@@ -325,14 +327,6 @@ FROM
     allowed_value: {
       label: "AASS"
       value: "AASS"
-    }
-  }
-
-  parameter: acumulado {
-    type: yesno
-    allowed_value: {
-      label: "Acumulado"
-      value: "Yes"
     }
   }
 
