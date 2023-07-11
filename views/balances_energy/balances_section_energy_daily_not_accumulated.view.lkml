@@ -2,20 +2,27 @@ view: balances_section_energy_daily_not_accumulated {
   derived_table: {
     sql:
 WITH
-  -- filter by temporal range and infrastructure type, do previous step to deduplicate rows
+  connection_point AS (
+  SELECT
+    *
+  FROM
+    `sea-produccion.target_reporting.balances_section_energy_daily` AS energy
+    JOIN `sea-produccion.target_reporting.looker_connection_point` AS connection_point
+      ON energy.measurementunit_id = measurementUnitId
+  WHERE
+    CASE
+      WHEN {% parameter infrastructure_type %} = "Red de Transporte"
+        THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
+    END
+    AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
+    AND TS < {% date_end date_filter %}),
+
   temp_table AS (
   SELECT
     *,
-    ROW_NUMBER() OVER(PARTITION BY TS, section_name ORDER BY TS DESC) AS rn
+    ROW_NUMBER() OVER(PARTITION BY TS, section_name, measurementunit_id ORDER BY TS DESC) AS rn
   FROM
-    `sea-produccion.target_reporting.balances_section_energy_daily`
-  WHERE
-    CASE
-      WHEN {% parameter infrastructure_type %} = "RT"
-      THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
-    END
-    AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
-    AND TS <= {% date_end date_filter %}),
+    connection_point),
 
   -- deduplicate rows
   deduplicated AS (
@@ -29,30 +36,32 @@ WITH
   -- compute the initial and final stock
   existencias AS (
   SELECT
-      a.stock_E AS `Existencias Iniciales`,
-      b.stock_E AS `Existencias Finales`,
-      a.stock_E - b.stock_E AS `Delta de Existencias`,
-      a.section_name,
-      b.TS,
+    a.stock_E AS `Existencias Iniciales`,
+    b.stock_E AS `Existencias Finales`,
+    a.stock_E - b.stock_E AS `Delta de Existencias`,
+    a.section_name,
+    b.TS,
   FROM
     deduplicated AS a
     JOIN deduplicated AS b
       ON a.TS = TIMESTAMP_SUB(b.TS, INTERVAL 1 DAY)
-      AND a.section_name = b.section_name),
+      AND a.section_name = b.section_name
+  GROUP BY
+    1, 2, 3, 4, 5),
 
   -- compute measures
   medidas AS (
   SELECT
     COALESCE(SUM(CAST(
-      deduplicated.totalizados_IN_E AS INT)
+      IF(role = "IN", delta_E, 0) AS INT)
     ), 0) AS `Medida de Entrada`,
     COALESCE(SUM(CAST(
-      deduplicated.totalizados_OUT_E AS INT)
+      IF(role = "OUT", delta_E, 0) AS INT)
     ), 0) AS `Medida de Salida`,
     COALESCE(SUM(CAST(
       deduplicated.totalizados_SELF_E AS INT)
     ), 0) AS `Medida de Gas de Operación`,
-    COALESCE(SUM(CAST(
+    COALESCE(SUM(DISTINCT CAST(
       deduplicated.mermas_E AS INT)
     ), 0) AS `Perdidas y DDM`,
     section_name,
@@ -69,8 +78,8 @@ WITH
   -- compute energy for role SELF
   medida_de_gas_de_operacion AS (
   SELECT
-    COALESCE(SUM(CAST( deduplicated.delta_E_total_fuelgas AS INT) ), 0) AS `EC`,
-    COALESCE(SUM(CAST( deduplicated.delta_E_total_cald AS INT) ), 0) AS `ERM`,
+    COALESCE(SUM(CAST(deduplicated.delta_E_total_fuelgas AS INT)), 0) AS `EC`,
+    COALESCE(SUM(CAST(deduplicated.delta_E_total_cald AS INT)), 0) AS `ERM`,
     section_name,
     TS
   FROM
@@ -82,27 +91,73 @@ WITH
     section_name,
     TS),
 
+  medidas_de_entrada AS (
+  SELECT
+    '' AS dimension,
+    name AS subtotal,
+    COALESCE(SUM(CAST(delta_E AS INT)), 0) AS value,
+    section_name,
+    TS,
+    role
+  FROM
+    deduplicated
+  WHERE
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
+    AND role = 'IN'
+  GROUP BY
+    dimension,
+    subtotal,
+    section_name,
+    TS,
+    role),
+
+  medidas_de_salida AS (
+  SELECT
+    '' AS dimension,
+    name AS subtotal,
+    COALESCE(SUM(CAST(delta_E AS INT)), 0) AS value,
+    section_name,
+    TS,
+    role
+  FROM
+    deduplicated
+  WHERE
+    TS >= {% date_start date_filter %}
+    AND TS <= {% date_end date_filter %}
+    AND role = 'OUT'
+  GROUP BY
+    dimension,
+    subtotal,
+    section_name,
+    TS,
+    role),
+
   existencias_pivoted AS (
   SELECT
     dimension,
-    "" AS subtotal,
+    '' AS subtotal,
     value,
     section_name,
-    TS
+    TS,
+    '' AS role
   FROM
-    existencias UNPIVOT(value FOR dimension IN (`Existencias Iniciales`,
-        `Existencias Finales`,
-        `Delta de Existencias`))),
+    existencias UNPIVOT(value FOR dimension IN (
+      `Existencias Iniciales`,
+      `Existencias Finales`,
+      `Delta de Existencias`))),
 
   medidas_pivoted AS (
   SELECT
     dimension,
-    "" AS subtotal,
+    '' AS subtotal,
     value,
     section_name,
-    TS
+    TS,
+    '' AS role
   FROM
-    medidas UNPIVOT(value FOR dimension IN (`Medida de Entrada`,
+    medidas UNPIVOT(value FOR dimension IN (
+      `Medida de Entrada`,
       `Medida de Salida`,
       `Medida de Gas de Operación`,
       `Perdidas y DDM`))),
@@ -113,9 +168,11 @@ WITH
     subtotal,
     value,
     section_name,
-    TS
+    TS,
+    'SELF' AS role
   FROM
-    medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN (`EC`,
+    medida_de_gas_de_operacion UNPIVOT(value FOR subtotal IN (
+      `EC`,
       `ERM`))),
 
   measures AS (
@@ -124,58 +181,61 @@ WITH
   FROM
     existencias_pivoted
   UNION ALL
-  SELECT
-    *
-  FROM
-    medidas_pivoted
+    SELECT
+      *
+    FROM
+      medidas_pivoted
   UNION ALL
-  SELECT
-    *
-  FROM
-    medida_de_gas_de_operacion_pivoted),
+    SELECT
+      *
+    FROM
+      medida_de_gas_de_operacion_pivoted
+  UNION ALL
+    SELECT
+      *
+    FROM
+      medidas_de_entrada
+  UNION ALL
+    SELECT
+      *
+    FROM
+      medidas_de_salida),
 
   add_status AS (
   SELECT
     *,
     'CERRADO' AS status
   FROM
-    measures
-  )
+    measures)
+
+{% assign counter = 1 %}
 
 SELECT
   *,
+  CASE
+    WHEN dimension = 'Existencias Iniciales' THEN {% increment counter %}
+    WHEN dimension = 'Existencias Finales' THEN {% increment counter %}
+    WHEN dimension = 'Delta de Existencias' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Entrada' THEN {% increment counter %}
+    WHEN role = 'IN' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Salida' THEN {% increment counter %}
+    WHEN role = 'OUT' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Gas de Operación' THEN {% increment counter %}
+    WHEN role = 'SELF' THEN {% increment counter %}
+    WHEN dimension = 'Perdidas y DDM' THEN {% increment counter %}
+    ELSE 100
+  END AS dimension_order,
   ROW_NUMBER() OVER(
-    PARTITION BY TS
-    ORDER BY
-      section_name,
-      CASE
-        WHEN dimension = 'Existencias Iniciales' THEN 1
-        WHEN dimension = 'Existencias Finales' THEN 2
-        WHEN dimension = 'Delta de Existencias' THEN 3
-        WHEN dimension = 'Medida de Entrada' THEN 4
-        WHEN dimension = 'Medida de Salida' THEN 5
-        WHEN dimension = 'Medida de Gas de Operación' THEN 6
-        WHEN dimension = 'Perdidas y DDM' THEN 9
-        WHEN dimension = '' THEN
-          CASE
-            WHEN subtotal = 'EC' THEN 7
-            WHEN subtotal = 'ERM' THEN 8
-            ELSE 100
-          END
-        ELSE 100
-      END) AS dimension_order,
-  ROW_NUMBER() OVER(
-    PARTITION BY dimension, subtotal, section_name
+    PARTITION BY dimension, subtotal, section_name, role
     ORDER BY
       TS ASC) AS ts_order
 FROM
-  add_status
-    ;;
+  add_status;;
   }
 
 
   # DIMENSIONS
-
+  # Dimensions to display
   dimension: dimension {
     label: "Balance Físico"
     type: string
@@ -190,28 +250,11 @@ FROM
     sql: ${TABLE}.subtotal ;;
   }
 
-  dimension: dimension_order {
-    type: number
-    hidden: yes
-    sql: ${TABLE}.dimension_order ;;
-  }
-
-  dimension: section_name {
-    type: string
-    sql: ${TABLE}.section_name ;;
-  }
-
   dimension: TS {
     label: "Dia de Gas"
     type: date
     order_by_field: ts_order
     sql: ${TABLE}.TS ;;
-  }
-
-  dimension: ts_order {
-    type: number
-    hidden: yes
-    sql: ${TABLE}.ts_order ;;
   }
 
   dimension: status {
@@ -221,8 +264,36 @@ FROM
   }
 
 
-  # MEASURES
+  # Ordering dimensions
+  dimension: dimension_order {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.dimension_order ;;
+  }
 
+
+  dimension: ts_order {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.ts_order ;;
+  }
+
+
+  # Dimensions to hide
+  dimension: section_name {
+    type: string
+    hidden: yes
+    sql: ${TABLE}.section_name ;;
+  }
+
+  dimension: role {
+    hidden: yes
+    type: string
+    sql: ${TABLE}.role ;;
+  }
+
+
+  # MEASURES
   measure: value {
     type: sum
     label: "Energía [kWh]"
@@ -231,19 +302,17 @@ FROM
 
 
   # FILTERS
-
   filter: date_filter {
     type: date
   }
 
 
   # PARAMETERS
-
   parameter: infrastructure_type {
     type: string
     allowed_value: {
       label: "Red de Transporte"
-      value: "RT"
+      value: "Red de Transporte"
     }
     allowed_value: {
       label: "Plantas"

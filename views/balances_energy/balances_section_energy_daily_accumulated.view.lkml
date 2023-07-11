@@ -11,7 +11,7 @@ WITH
       ON energy.measurementunit_id = measurementUnitId
   WHERE
     CASE
-      WHEN {% parameter infrastructure_type%} = "Red de Transporte"
+      WHEN {% parameter infrastructure_type %} = "Red de Transporte"
         THEN section_name IN ("TR_SAG", "RT_ETN", "RT_ENA")
     END
     AND TS >= TIMESTAMP_SUB({% date_start date_filter %}, INTERVAL 1 DAY)
@@ -107,16 +107,14 @@ WITH
     COALESCE(SUM(DISTINCT CAST(
       deduplicated.mermas_E AS INT)
     ), 0) AS `Perdidas y DDM`,
-    section_name,
-    '' AS role
+    section_name
   FROM
     deduplicated
   WHERE
     TS >= {% date_start date_filter %}
     AND TS <= {% date_end date_filter %}
   GROUP BY
-    section_name,
-    role),
+    section_name),
 
   medida_de_gas_de_operacion AS (
   SELECT
@@ -243,25 +241,25 @@ WITH
 
 SELECT
   *,
-  ROW_NUMBER() OVER(
-    ORDER BY
-      CASE
-        WHEN dimension = 'Existencias Iniciales' THEN {% increment counter %}
-        WHEN dimension = 'Existencias Finales' THEN {% increment counter %}
-        WHEN dimension = 'Delta de Existencias' THEN {% increment counter %}
-        WHEN dimension = 'Medida de Entrada' THEN {% increment counter %}
-        WHEN role = 'IN' THEN {% increment counter %}
-        WHEN dimension = 'Medida de Salida' THEN {% increment counter %}
-        WHEN role = 'OUT' THEN {% increment counter %}
-        WHEN dimension = 'Medida de Gas de Operación' THEN {% increment counter %}
-        WHEN role = 'SELF' THEN {% increment counter %}
-        WHEN dimension = 'Perdidas y DDM' THEN {% increment counter %}
-        ELSE 100
-      END) AS rn,
-  CONCAT(CAST(FORMAT_DATE("%x", DATE({% date_start date_filter%})) AS STRING),
+  CASE
+    WHEN dimension = 'Existencias Iniciales' THEN {% increment counter %}
+    WHEN dimension = 'Existencias Finales' THEN {% increment counter %}
+    WHEN dimension = 'Delta de Existencias' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Entrada' THEN {% increment counter %}
+    WHEN role = 'IN' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Salida' THEN {% increment counter %}
+    WHEN role = 'OUT' THEN {% increment counter %}
+    WHEN dimension = 'Medida de Gas de Operación' THEN {% increment counter %}
+    WHEN role = 'SELF' THEN {% increment counter %}
+    WHEN dimension = 'Perdidas y DDM' THEN {% increment counter %}
+    ELSE 100
+  END AS rn,
+  CONCAT(CAST(FORMAT_DATE("%d/%m/%Y", DATE({% date_start date_filter %})) AS STRING),
     " - ",
-    CAST(FORMAT_DATE("%x", DATE_SUB(DATE({% date_end date_filter%}), INTERVAL 1 DAY)) AS STRING)) AS date_range,
-  CONCAT({% parameter infrastructure_type%}, " - ", section_name) AS infrastructure
+    CAST(
+      FORMAT_DATE("%d/%m/%Y", DATE_SUB(DATE({% date_end date_filter %}), INTERVAL 1 DAY)
+    ) AS STRING)) AS date_range,
+  CONCAT({% parameter infrastructure_type %}, " - ", section_name) AS infrastructure
 FROM
   measures ;;
   }
