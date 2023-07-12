@@ -267,7 +267,6 @@ FROM
   # Ordering dimensions
   dimension: dimension_order {
     type: number
-    hidden: yes
     sql: ${TABLE}.dimension_order ;;
   }
 
@@ -282,12 +281,10 @@ FROM
   # Dimensions to hide
   dimension: section_name {
     type: string
-    hidden: yes
     sql: ${TABLE}.section_name ;;
   }
 
   dimension: role {
-    hidden: yes
     type: string
     sql: ${TABLE}.role ;;
   }
