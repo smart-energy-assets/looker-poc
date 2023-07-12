@@ -264,6 +264,9 @@ FROM
   measures ;;
   }
 
+
+  # DIMENSIONS
+  # Dimensions to display
   dimension: dimension {
     label: "Balance Físico"
     type: string
@@ -276,19 +279,6 @@ FROM
     type: string
     order_by_field: rn
     sql: ${TABLE}.subtotal ;;
-  }
-
-  dimension: value {
-    type: number
-    label: "Energía [kWh]"
-    order_by_field: rn
-    sql: ${TABLE}.value ;;
-  }
-
-  dimension: rn {
-    type: number
-    hidden: yes
-    sql: ${TABLE}.rn ;;
   }
 
   dimension: section_name {
@@ -308,10 +298,30 @@ FROM
     sql: ${TABLE}.infrastructure ;;
   }
 
+
+  # Orderding dimensions
+  dimension: rn {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.rn ;;
+  }
+
+
+  # MEASURES
+  measure: value {
+    type: sum
+    label: "Energía [kWh]"
+    sql: ${TABLE}.value ;;
+  }
+
+
+  # FILTERS
   filter: date_filter {
     type: date
   }
 
+
+  # PARAMETERS
   parameter: infrastructure_type {
     type: string
     allowed_value: {

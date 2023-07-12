@@ -225,6 +225,7 @@ SELECT
     WHEN dimension = 'Pérdidas + DDM' THEN {% increment counter %}
     ELSE 100
   END AS dimension_order,
+  RANK() OVER(ORDER BY TS ASC) AS ts_order
 FROM
   add_status;;
   }
@@ -249,6 +250,7 @@ FROM
   dimension: TS {
     label: "Día de Gas"
     type: date
+    order_by_field: ts_order
     sql: ${TABLE}.TS ;;
     html:{{ rendered_value | date: "%d/%m/%Y" }};;
   }
