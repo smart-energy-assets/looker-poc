@@ -252,7 +252,7 @@ FROM
     type: date
     order_by_field: ts_order
     sql: ${TABLE}.TS ;;
-    html:{{ rendered_value | date: "%d/%m/%Y" }};;
+    html:  {{ rendered_value | date: " %d/%m/%Y " }};;
   }
 
   dimension: status {
