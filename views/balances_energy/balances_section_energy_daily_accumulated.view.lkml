@@ -106,7 +106,7 @@ WITH
     ), 0) AS `Medida de Gas de Operación`,
     COALESCE(SUM(DISTINCT CAST(
       deduplicated.mermas_E AS INT)
-    ), 0) AS `Perdidas y DDM`,
+    ), 0) AS `Pérdidas + DDM`,
     section_name
   FROM
     deduplicated
@@ -198,7 +198,7 @@ WITH
       `Medida de Entrada`,
       `Medida de Salida`,
       `Medida de Gas de Operación`,
-      `Perdidas y DDM`))),
+      `Pérdidas + DDM`))),
 
   medida_de_gas_de_operacion_pivoted AS (
   SELECT
@@ -251,7 +251,7 @@ SELECT
     WHEN role = 'OUT' THEN {% increment counter %}
     WHEN dimension = 'Medida de Gas de Operación' THEN {% increment counter %}
     WHEN role = 'SELF' THEN {% increment counter %}
-    WHEN dimension = 'Perdidas y DDM' THEN {% increment counter %}
+    WHEN dimension = 'Pérdidas + DDM' THEN {% increment counter %}
     ELSE 100
   END AS rn,
   CONCAT(CAST(FORMAT_DATE("%d/%m/%Y", DATE({% date_start date_filter %})) AS STRING),
